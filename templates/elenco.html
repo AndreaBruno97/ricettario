@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Elenco delle ricette</title>
+</head>
+<body>
+    {% if num == 0 %}
+        <h1>Peccato, ancora non ci sono ricette</h1>
+        <p><img src="static/piatto_vuoto.jpg"></p>
+        <p>Torna tra un po' per vedere le tue ricette</p>
+    {% else %}
+        <h1>Elenco di ricette:</h1>
+        {% for ricetta in lista %}
+            <a href="{{ url_for("ricetta", nome=ricetta[1]) }}">{{ ricetta[1] }}</a>
+        {% endfor %}
+    {% endif %}
+    <p><a href="{{ url_for("nuova_ricetta", flag=0) }}">Inserisci una nuova ricetta</a></p>
+    <p><a href="{{ url_for("root") }}">Ritorna alla pagina principale</a></p>
+</body>
+</html>

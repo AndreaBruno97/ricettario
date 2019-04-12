@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Nuova ricetta</title>
+</head>
+<body>
+    <!--
+        flag =  0: inserimento di una nuova ricetta
+        flag =  1: successo per operazione di inserimento
+        flag = -1: fallimento: non è stato inserito testo
+        flag = -2: fallimento: ricetta già esistente
+    -->
+    {% if flag==0 %}
+        <!--Inserimento ricetta-->
+        <h1>Inserisci una nuova ricetta:</h1>
+            <form action="{{ url_for("nuova_ricetta_insert") }}" method="post">
+                <p>Nome: <input type="text" name = "nome"></p>
+                <p>Testo: <textarea name="testo" cols="40" rows="5"></textarea></p>
+                <input type="submit" value="Invia la ricetta">
+            </form>
+    {% elif flag==1 %}
+        <!--Successo inserimento-->
+        <h1>Successo</h1>
+            <p>La ricetta è stata aggiunta al ricettario!</p>
+    {% elif flag==-1 %}
+        <!--Fallimento: no testo-->
+        <h1>Errore</h1>
+            <p>Non hai inserito il testo della ricetta</p>
+    {% elif flag==-2 %}
+        <!--Fallimento: Ricetta esistente-->
+        <h1>Errore</h1>
+            <p>La ricetta esiste già nel ricettario</p>
+    {% endif %}
+    <p><a href="{{ url_for("root") }}">Ritorna alla pagina principale</a></p>
+</body>
+</html>
