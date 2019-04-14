@@ -5,12 +5,14 @@ File principale, gestisce le ridirezioni delle pagine
 from flask import Flask, render_template, redirect, url_for, request, session
 import util
 import db_inter
+import os
 
 app = Flask(__name__)
 
 
 @app.route("/")
 def root():
+    nome=db_inter.id_to_nome(2)
     return render_template("root.html")
 
 @app.route("/elenco")
@@ -30,6 +32,17 @@ def ricetta(nome):
 @app.route("/nuova_ricetta/<flag>")
 def nuova_ricetta(flag):
     return render_template("nuova_ricetta.html", flag=int(flag))
+
+@app.route("/elimina_ricetta/<id>")
+def elimina_ricetta(id):
+    nome=db_inter.id_to_nome(id)
+    if (len(nome)!=0 and db_inter.elimina_ricetta(id)!=-1):
+        link=util.nome_to_link(nome)
+        os.remove(link)
+        flag=0
+    else:
+        flag=1
+    return render_template("elimina_ricetta.html", flag=int(flag))
 
 @app.route("/nuova_ricetta/insert", methods=["POST"])
 def nuova_ricetta_insert():
