@@ -21,7 +21,6 @@ def all_ricette():
 
 def id_to_nome(id):
     """
-
     :param id: intero positivo da cercare
     :return: stringa se esiste, stringa vuota altrimenti
     """
@@ -32,17 +31,20 @@ def id_to_nome(id):
     result = cursor.fetchall()
     cursor.close()
     conn.close()
-    return result[0][0]
+
+    if len(result)==0:
+        return -1
+    else:
+        return result[0][0]
 
 def nome_to_id(nome):
     """
-
     :param nome: stringa da cercare
     :return: intero positivo se esiste, -1 altrimenti
     """
     conn = connetti()
     cursor = conn.cursor()
-    sql = "select id from ricettario.ricettario where nome=%s"
+    sql = "select id from ricettario.ricettario where binary nome=%s"
     cursor.execute(sql, (nome,))
     result = cursor.fetchall()
     cursor.close()
@@ -56,6 +58,7 @@ def nome_to_id(nome):
 def new_ricetta(nome):
     #Controllo se la ricetta esiste già
     id=nome_to_id(nome)
+
     if(id<0):
         conn = connetti()
         cursor = conn.cursor()

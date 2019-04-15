@@ -6,7 +6,9 @@
 </head>
 <body>
     <h1>{{ nome }}</h1>
-    <p>{{ contenuto }}</p>
+    <p>{{ testo }}</p>
+    <p><a href="{{ url_for("modifica_ricetta", id=id)}}">Modifica</a></p>
+    <p><a href="{{ url_for("conferma_eliminazione", id=id) }}">Elimina</a></p>
     <p><a href="{{ url_for("root") }}">Ritorna alla pagina principale</a></p>
     <p><a href="{{ url_for("elenco") }}">Ritorna alle tue ricette</a></p>
 </body>

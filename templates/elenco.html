@@ -13,8 +13,8 @@
         <h1>Elenco di ricette:</h1>
         <ul>
         {% for ricetta in lista %}
-            <li><a href="{{ url_for("ricetta", nome=ricetta[1]) }}">{{ ricetta[1] }}</a>&emsp
-            <a href="{{ url_for("elimina_ricetta", id=ricetta[0]) }}">Elimina ricetta</a>
+            <li>
+            <a href="{{ url_for("ricetta", id=ricetta[0]) }}">{{ ricetta[1] }}</a>
             </li>
         {% endfor %}
         </ul>

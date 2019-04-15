@@ -10,6 +10,7 @@
         flag =  1: successo per operazione di inserimento
         flag = -1: fallimento: non è stato inserito testo
         flag = -2: fallimento: ricetta già esistente
+        flag = -3: fallimento: non è stato inserito il titolo
     -->
     {% if flag==0 %}
         <!--Inserimento ricetta-->
@@ -31,6 +32,10 @@
         <!--Fallimento: Ricetta esistente-->
         <h1>Errore</h1>
             <p>La ricetta esiste già nel ricettario</p>
+    {% elif flag==-3 %}
+        <!--Fallimento: no titolo-->
+        <h1>Errore</h1>
+            <p>Non hai inserito il titolo della ricetta</p>
     {% endif %}
     <p><a href="{{ url_for("root") }}">Ritorna alla pagina principale</a></p>
 </body>

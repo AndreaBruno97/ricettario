@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifica ricetta</title>
+</head>
+<body>
+    <!--Modifica ricetta-->
+    <h1>Modifica la tua ricetta:</h1>
+        <form action="{{ url_for("modifica_ricetta_risultato") }}" method="post">
+            <p>Nome: <input type="text" name = "nome" value="{{ nome }}"></p>
+            <p>Testo: <textarea name="testo" cols="40" rows="5">{{ testo }}</textarea></p>
+            <input type="hidden" name="id" value={{ id }} />
+            <input type="submit" value="Modifica la ricetta">
+
+            <p><a href="{{ url_for("modifica_ricetta", id=id)}}">Annulla</a></p>
+        </form>
+    <p><a href="{{ url_for("root") }}">Ritorna alla pagina principale</a></p>
+</body>
+</html>
