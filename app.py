@@ -54,14 +54,21 @@ def nuova_ricetta_insert():
         -2 -> fallimento: ricetta esistente
         -3 -> fallimento: no titolo
     """
+
     nome = request.form["nome"]
     testo = request.form["testo"]
+
+    ingredienti=[]
+    list_id=request.form["count"].split(',')
+    for i in list_id:
+        ingredienti.append(request.form["id_"+i])
+
     if len(testo)==0:
         flag= -1
     elif len(nome)==0:
         flag= -3
     elif (db_inter.new_ricetta(nome)!=-1):
-        util.scrivi(nome, testo)
+        util.scrivi(nome, ingredienti, testo)
         flag=1
     else:
         flag= -2
@@ -87,6 +94,11 @@ def modifica_ricetta_risultato():
     id = request.form["id"]
     testo = request.form["testo"]
 
+    ingredienti=[]
+    list_id=request.form["count"].split(',')
+    for i in list_id:
+        ingredienti.append(request.form[i])
+
     old_nome=db_inter.id_to_nome(id)
 
     if len(testo)==0:
@@ -95,15 +107,12 @@ def modifica_ricetta_risultato():
     elif len(nome)==0:
         #non c'è nome
         flag= -3
-    elif (nome==old_nome):
-        #modificato solo il testo
-        util.scrivi(nome, testo)
-        flag=1
     elif(db_inter.new_ricetta(nome)!=-1):
-        #modificato titolo ed eventualmente testo
-        db_inter.elimina_ricetta(id)
-        util.elimina(old_nome)
-        util.scrivi(nome, testo)
+        if (nome!=old_nome):
+            #modificato anche il titolo
+            db_inter.elimina_ricetta(id)
+            util.elimina(old_nome)
+        util.scrivi(nome, ingredienti, testo)
         flag=1
     else:
         #ricetta già esistente con il nuovo titolo
