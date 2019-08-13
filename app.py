@@ -23,8 +23,10 @@ def elenco():
 @app.route("/elenco/<id>")
 def ricetta(id):
     nome=db_inter.id_to_nome(id)
-    testo=util.leggi(nome)
-    return render_template("ricetta.html", nome=nome, testo=testo, id=id)
+    leggi_tmp = util.leggi(nome)
+    testo = leggi_tmp[0]
+    ingredienti = leggi_tmp[1]
+    return render_template("ricetta.html", nome=nome, testo=testo, id=id, ingredienti=ingredienti, num=len(ingredienti))
 
 @app.route("/nuova_ricetta/<flag>")
 def nuova_ricetta(flag):
@@ -53,20 +55,27 @@ def nuova_ricetta_insert():
         -1 -> fallimento: no testo
         -2 -> fallimento: ricetta esistente
         -3 -> fallimento: no titolo
+        -4 -> fallimento: no ingredienti
     """
 
     nome = request.form["nome"]
     testo = request.form["testo"]
 
     ingredienti=[]
-    list_id=request.form["count"].split(',')
-    for i in list_id:
-        ingredienti.append(request.form["id_"+i])
+    list_id=request.form["elenco_ingr"].split(',')
+    if list_id[0] != '':
+        for i in list_id:
+            ingredienti.append(request.form["id_" + i])
 
     if len(testo)==0:
+        #non c'è testo
         flag= -1
     elif len(nome)==0:
+        #non c'è nome
         flag= -3
+    elif list_id[0] == '':
+        #non ci sono ingredienti
+        flag = -4
     elif (db_inter.new_ricetta(nome)!=-1):
         util.scrivi(nome, ingredienti, testo)
         flag=1
@@ -77,8 +86,10 @@ def nuova_ricetta_insert():
 @app.route("/modifica_ricetta/<id>")
 def modifica_ricetta(id):
     nome=db_inter.id_to_nome(id)
-    testo = util.leggi(nome)
-    return render_template("modifica_ricetta.html", id=id, nome=nome, testo=testo)
+    leggi_tmp = util.leggi(nome)
+    testo = leggi_tmp[0]
+    ingredienti = leggi_tmp[1]
+    return render_template("modifica_ricetta.html", id=id, nome=nome, testo=testo, ingredienti=ingredienti, num=len(ingredienti))
 
 @app.route("/modifica_ricetta/risultato", methods=["POST"])
 def modifica_ricetta_risultato():
@@ -89,15 +100,17 @@ def modifica_ricetta_risultato():
         -1 -> fallimento: no testo
         -2 -> fallimento: ricetta esistente
         -3 -> fallimento: no titolo
+        -4 -> fallimento: no ingredienti
     """
     nome = request.form["nome"]
     id = request.form["id"]
     testo = request.form["testo"]
 
     ingredienti=[]
-    list_id=request.form["count"].split(',')
-    for i in list_id:
-        ingredienti.append(request.form[i])
+    list_id=request.form["elenco_ingr"].split(',')
+    if list_id[0] != '':
+        for i in list_id:
+            ingredienti.append(request.form["id_"+i])
 
     old_nome=db_inter.id_to_nome(id)
 
@@ -107,16 +120,25 @@ def modifica_ricetta_risultato():
     elif len(nome)==0:
         #non c'è nome
         flag= -3
-    elif(db_inter.new_ricetta(nome)!=-1):
-        if (nome!=old_nome):
+    elif list_id[0] == '':
+        #non ci sono ingredienti
+        flag = -4
+    elif (nome != old_nome):
+        #Nuova ricetta inserita con successo nel database
+        if (db_inter.new_ricetta(nome)!=-1):
             #modificato anche il titolo
             db_inter.elimina_ricetta(id)
             util.elimina(old_nome)
-        util.scrivi(nome, ingredienti, testo)
-        flag=1
+            util.scrivi(nome, ingredienti, testo)
+            flag = 1
+        else:
+            #ricetta già esistente con il nuovo titolo
+            flag= -2
     else:
-        #ricetta già esistente con il nuovo titolo
-        flag= -2
+        util.scrivi(nome, ingredienti, testo)
+        flag = 1
+
+
     return render_template("modifica_ricetta_risultato.html", flag=flag)
 
 

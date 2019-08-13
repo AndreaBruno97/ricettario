@@ -24,9 +24,18 @@ def nome_to_link(nome):
 def leggi(nome):
     link=nome_to_link(nome)
     f=open(link, "r")
-    testo=f.read()
+    testo_completo=f.read()
     f.close()
-    return testo
+
+    # Rimozione \n per una corretta lettura del file
+    lista=testo_completo.split(separatore)
+    testo=lista[1][1:]
+    ingredienti=lista[0][:-1].split("\n")
+
+    # Ritorna un array con primo elemento la stringa col testo
+    # e come secondo elemento un array di stringhe che
+    # rappresentano gli ingredienti
+    return [testo, ingredienti]
 
 def scrivi(nome, ingredienti, testo):
     link=nome_to_link(nome)

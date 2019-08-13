@@ -9,12 +9,30 @@
     <h1>Modifica la tua ricetta:</h1>
         <form action="{{ url_for("modifica_ricetta_risultato") }}" method="post">
             <p>Nome: <input type="text" name = "nome" value="{{ nome }}"></p>
+            <p>Ingredienti:
+                    {% for i in range(0, num) %}
+                    <div class='ingr' id={{ i }}>
+                        <input type='text' name = 'id_{{ i }}' value={{ ingredienti[i] }}><button class='ingr' id={{ i }} type='button'>Cancella</button>
+                    </div>
+                    {% endfor %}
+
+                    <div id="ingredienti"></div>
+
+                    <button id="ingr_btn" type="button">Nuovo</button>
+            </p>
             <p>Testo: <textarea name="testo" cols="40" rows="5">{{ testo }}</textarea></p>
             <input type="hidden" name="id" value={{ id }} />
+            <input id="count" type="hidden" name="count" value={{ num }}>
+                <input id="elenco_ingr" type="hidden" name="elenco_ingr" value="[]">
             <input type="submit" value="Modifica la ricetta">
 
             <p><a href="{{ url_for("modifica_ricetta", id=id)}}">Annulla</a></p>
         </form>
     <p><a href="{{ url_for("root") }}">Ritorna alla pagina principale</a></p>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script src="/static/js/nuovo_ingrediente.js"></script>
+
 </body>
 </html>

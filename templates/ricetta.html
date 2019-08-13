@@ -6,6 +6,11 @@
 </head>
 <body>
     <h1>{{ nome }}</h1>
+    <ul>
+        {% for i in range(0, num) %}
+            <li>{{ ingredienti[i] }}</li>
+        {% endfor %}
+    </ul>
     <p>{{ testo }}</p>
     <p><a href="{{ url_for("modifica_ricetta", id=id)}}">Modifica</a></p>
     <p><a href="{{ url_for("conferma_eliminazione", id=id) }}">Elimina</a></p>

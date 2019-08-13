@@ -11,6 +11,7 @@
         flag = -1: fallimento: non è stato inserito testo
         flag = -2: fallimento: ricetta già esistente
         flag = -3: fallimento: non è stato inserito il titolo
+        flag = -4: fallimento: non sono stati inseriti ingredienti
     -->
     {% if flag==0 %}
         <!--Inserimento ricetta-->
@@ -22,7 +23,8 @@
                     <button id="ingr_btn" type="button">Nuovo</button>
                 </p>
                 <p>Testo: <textarea name="testo" cols="40" rows="5"></textarea></p>
-                <input id="count" type="hidden" name="count" value="[]">
+                <input id="count" type="hidden" name="count" value="0">
+                <input id="elenco_ingr" type="hidden" name="elenco_ingr" value="[]">
                 <input type="submit" value="Invia la ricetta">
             </form>
     {% elif flag==1 %}
@@ -41,6 +43,10 @@
         <!--Fallimento: no titolo-->
         <h1>Errore</h1>
             <p>Non hai inserito il titolo della ricetta</p>
+    {% elif flag==-4 %}
+        <!--Fallimento: no ingredienti-->
+        <h1>Errore</h1>
+            <p>Non hai inserito ingredienti nella ricetta</p>
     {% endif %}
     <p><a href="{{ url_for("root") }}">Ritorna alla pagina principale</a></p>
 
