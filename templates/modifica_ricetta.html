@@ -9,6 +9,17 @@
     <h1>Modifica la tua ricetta:</h1>
         <form action="{{ url_for("modifica_ricetta_risultato") }}" method="post">
             <p>Nome: <input type="text" name = "nome" value="{{ nome }}"></p>
+                <p>
+                    <!--Tag primario selezionato-->
+                    <input type="hidden" id="tag_primario_scelto" name="tag_primario_scelto" value={{ tag_primario }} />
+                    <!--Tag primari-->
+                    <input type="radio" name="tag_primario" id="tag_prim_Antipasti" value="Antipasti">Antipasti
+                    <input type="radio" name="tag_primario" id="tag_prim_Primi" value="Primi">Primi
+                    <input type="radio" name="tag_primario" id="tag_prim_Secondi" value="Secondi">Secondi
+                    <input type="radio" name="tag_primario" id="tag_prim_Piatti unici" value="Piatti unici">Piatti unici
+                    <input type="radio" name="tag_primario" id="tag_prim_Contorni" value="Contorni">Contorni
+                    <input type="radio" name="tag_primario" id="tag_prim_Dolci" value="Dolci">Dolci
+                </p>
             <p>Ingredienti:
                     {% for i in range(0, num) %}
                     <div class='ingr' id={{ i }}>
@@ -33,6 +44,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
     <script src="/static/js/nuovo_ingrediente.js"></script>
+    <script src="/static/js/modifica_selezione_tag.js"></script>
 
 </body>
 </html>

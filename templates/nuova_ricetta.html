@@ -12,12 +12,22 @@
         flag = -2: fallimento: ricetta già esistente
         flag = -3: fallimento: non è stato inserito il titolo
         flag = -4: fallimento: non sono stati inseriti ingredienti
+        flag = -5: fallimento: non è stato inserito un tag primari
     -->
     {% if flag==0 %}
         <!--Inserimento ricetta-->
         <h1>Inserisci una nuova ricetta:</h1>
             <form action="{{ url_for("nuova_ricetta_insert") }}" method="post">
                 <p>Nome: <input type="text" name = "nome"></p>
+                <p>
+                    <!--Tag primari-->
+                    <input type="radio" name="tag_primario" id="tag_prim_Antipasti" value="Antipasti">Antipasti
+                    <input type="radio" name="tag_primario" id="tag_prim_Primi" value="Primi">Primi
+                    <input type="radio" name="tag_primario" id="tag_prim_Secondi" value="Secondi">Secondi
+                    <input type="radio" name="tag_primario" id="tag_prim_Piatti unici" value="Piatti unici">Piatti unici
+                    <input type="radio" name="tag_primario" id="tag_prim_Contorni" value="Contorni">Contorni
+                    <input type="radio" name="tag_primario" id="tag_prim_Dolci" value="Dolci">Dolci
+                </p>
                 <p>Ingredienti:
                     <div id="ingredienti"></div>
                     <button id="ingr_btn" type="button">Nuovo</button>
@@ -47,6 +57,10 @@
         <!--Fallimento: no ingredienti-->
         <h1>Errore</h1>
             <p>Non hai inserito ingredienti nella ricetta</p>
+    {% elif flag==-5 %}
+        <!--Fallimento: no tag primario-->
+        <h1>Errore</h1>
+            <p>Non hai inserito un tag primario nella ricetta</p>
     {% endif %}
     <p><a href="{{ url_for("root") }}">Ritorna alla pagina principale</a></p>
 

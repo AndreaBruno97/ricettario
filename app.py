@@ -5,28 +5,38 @@ File principale, gestisce le ridirezioni delle pagine
 from flask import Flask, render_template, redirect, url_for, request, session
 import util
 import db_inter
+from enum import Enum
 
 app = Flask(__name__)
 
+"""
+Legenda Tag Primari:
+    Antipasti
+    Primi
+    Secondi
+    Piatti unici
+    Contorni
+    Dolci
+"""
 
 @app.route("/")
 def root():
-    nome=db_inter.id_to_nome(2)
     return render_template("root.html")
 
 @app.route("/elenco")
 def elenco():
-    lista=db_inter.all_ricette()
-    num=len(lista)
+    lista = db_inter.all_ricette()
+    num = len(lista)
     return render_template("elenco.html", lista=lista, num=num)
 
 @app.route("/elenco/<id>")
 def ricetta(id):
-    nome=db_inter.id_to_nome(id)
+    nome = db_inter.id_to_nome(id)
+    tag_primario = db_inter.id_to_tag_primario(id)
     leggi_tmp = util.leggi(nome)
     testo = leggi_tmp[0]
     ingredienti = leggi_tmp[1]
-    return render_template("ricetta.html", nome=nome, testo=testo, id=id, ingredienti=ingredienti, num=len(ingredienti))
+    return render_template("ricetta.html", nome=nome, tag_primario=tag_primario, testo=testo, id=id, ingredienti=ingredienti, num=len(ingredienti))
 
 @app.route("/nuova_ricetta/<flag>")
 def nuova_ricetta(flag):
@@ -38,8 +48,8 @@ def conferma_eliminazione(id):
 
 @app.route("/elimina_ricetta/<id>")
 def elimina_ricetta(id):
-    nome=db_inter.id_to_nome(id)
-    if (len(nome)!=0 and db_inter.elimina_ricetta(id)!=-1):
+    nome = db_inter.id_to_nome(id)
+    if (len(nome) != 0 and db_inter.elimina_ricetta(id) != -1):
         util.elimina(nome)
         flag=0
     else:
@@ -60,36 +70,39 @@ def nuova_ricetta_insert():
 
     nome = request.form["nome"]
     testo = request.form["testo"]
-
-    ingredienti=[]
-    list_id=request.form["elenco_ingr"].split(',')
+    tag_primario = request.form.get("tag_primario", None)
+    ingredienti = []
+    list_id = request.form["elenco_ingr"].split(',')
     if list_id[0] != '':
         for i in list_id:
             ingredienti.append(request.form["id_" + i])
-
-    if len(testo)==0:
-        #non c'è testo
-        flag= -1
-    elif len(nome)==0:
-        #non c'è nome
-        flag= -3
+    if len(testo) == 0:
+        # non c'è testo
+        flag = -1
+    elif len(nome) == 0:
+        # non c'è nome
+        flag = -3
     elif list_id[0] == '':
-        #non ci sono ingredienti
+        # non ci sono ingredienti
         flag = -4
-    elif (db_inter.new_ricetta(nome)!=-1):
+    elif tag_primario == None:
+        # non c'è tag primario
+        flag = -5
+    elif db_inter.new_ricetta(nome, tag_primario) != -1:
         util.scrivi(nome, ingredienti, testo)
-        flag=1
+        flag = 1
     else:
-        flag= -2
+        flag = -2
     return redirect(url_for("nuova_ricetta", flag=flag))
 
 @app.route("/modifica_ricetta/<id>")
 def modifica_ricetta(id):
-    nome=db_inter.id_to_nome(id)
+    nome = db_inter.id_to_nome(id)
+    tag_primario = db_inter.id_to_tag_primario(id)
     leggi_tmp = util.leggi(nome)
     testo = leggi_tmp[0]
     ingredienti = leggi_tmp[1]
-    return render_template("modifica_ricetta.html", id=id, nome=nome, testo=testo, ingredienti=ingredienti, num=len(ingredienti))
+    return render_template("modifica_ricetta.html", id=id, nome=nome, tag_primario=tag_primario, testo=testo, ingredienti=ingredienti, num=len(ingredienti))
 
 @app.route("/modifica_ricetta/risultato", methods=["POST"])
 def modifica_ricetta_risultato():
@@ -101,47 +114,52 @@ def modifica_ricetta_risultato():
         -2 -> fallimento: ricetta esistente
         -3 -> fallimento: no titolo
         -4 -> fallimento: no ingredienti
+        -5 -> fallimento: no tag primario
     """
     nome = request.form["nome"]
     id = request.form["id"]
     testo = request.form["testo"]
+    tag_primario = request.form.get("tag_primario", None)
 
-    ingredienti=[]
-    list_id=request.form["elenco_ingr"].split(',')
+    ingredienti = []
+    list_id = request.form["elenco_ingr"].split(',')
     if list_id[0] != '':
         for i in list_id:
             ingredienti.append(request.form["id_"+i])
 
-    old_nome=db_inter.id_to_nome(id)
+    old_nome = db_inter.id_to_nome(id)
 
-    if len(testo)==0:
-        #non c'è testo
+    if len(testo) == 0:
+        # non c'è testo
         flag= -1
-    elif len(nome)==0:
-        #non c'è nome
+    elif len(nome) == 0:
+        # non c'è nome
         flag= -3
     elif list_id[0] == '':
-        #non ci sono ingredienti
+        # non ci sono ingredienti
         flag = -4
-    elif (nome != old_nome):
-        #Nuova ricetta inserita con successo nel database
-        if (db_inter.new_ricetta(nome)!=-1):
-            #modificato anche il titolo
+    elif tag_primario == None:
+        # non c'è tag primario
+        flag = -5
+    elif nome != old_nome:
+        # Nuova ricetta inserita con successo nel database
+        if db_inter.new_ricetta(nome, tag_primario) != -1:
+            # modificato anche il titolo
             db_inter.elimina_ricetta(id)
             util.elimina(old_nome)
-            util.scrivi(nome, ingredienti, testo)
             flag = 1
         else:
-            #ricetta già esistente con il nuovo titolo
-            flag= -2
+            # ricetta già esistente con il nuovo titolo
+            flag = -2
     else:
-        util.scrivi(nome, ingredienti, testo)
         flag = 1
 
+    if flag == 1:
+        util.scrivi(nome, ingredienti, testo)
+        db_inter.cambia_tag_primario(id, tag_primario)
+        flag = 1
 
     return render_template("modifica_ricetta_risultato.html", flag=flag)
-
-
 
 if __name__ == '__main__':
     app.run()
