@@ -33,7 +33,7 @@ def elenco():
 def ricetta(id):
     nome = db_inter.id_to_nome(id)
     tag_primario = db_inter.id_to_tag_primario(id)
-    leggi_tmp = util.leggi(nome)
+    leggi_tmp = util.leggi(id)
     testo = leggi_tmp[0]
     ingredienti = leggi_tmp[1]
     return render_template("ricetta.html", nome=nome, tag_primario=tag_primario, testo=testo, id=id, ingredienti=ingredienti, num=len(ingredienti))
@@ -50,7 +50,7 @@ def conferma_eliminazione(id):
 def elimina_ricetta(id):
     nome = db_inter.id_to_nome(id)
     if (len(nome) != 0 and db_inter.elimina_ricetta(id) != -1):
-        util.elimina(nome)
+        util.elimina(id)
         flag=0
     else:
         flag=1
@@ -89,7 +89,8 @@ def nuova_ricetta_insert():
         # non c'è tag primario
         flag = -5
     elif db_inter.new_ricetta(nome, tag_primario) != -1:
-        util.scrivi(nome, ingredienti, testo)
+        new_id = db_inter.nome_to_id(nome)
+        util.scrivi(new_id, ingredienti, testo)
         flag = 1
     else:
         flag = -2
@@ -99,7 +100,7 @@ def nuova_ricetta_insert():
 def modifica_ricetta(id):
     nome = db_inter.id_to_nome(id)
     tag_primario = db_inter.id_to_tag_primario(id)
-    leggi_tmp = util.leggi(nome)
+    leggi_tmp = util.leggi(id)
     testo = leggi_tmp[0]
     ingredienti = leggi_tmp[1]
     return render_template("modifica_ricetta.html", id=id, nome=nome, tag_primario=tag_primario, testo=testo, ingredienti=ingredienti, num=len(ingredienti))
@@ -117,7 +118,7 @@ def modifica_ricetta_risultato():
         -5 -> fallimento: no tag primario
     """
     nome = request.form["nome"]
-    id = request.form["id"]
+    id_num = request.form["id"]
     testo = request.form["testo"]
     tag_primario = request.form.get("tag_primario", None)
 
@@ -127,7 +128,7 @@ def modifica_ricetta_risultato():
         for i in list_id:
             ingredienti.append(request.form["id_"+i])
 
-    old_nome = db_inter.id_to_nome(id)
+    old_nome = db_inter.id_to_nome(id_num)
 
     if len(testo) == 0:
         # non c'è testo
@@ -145,8 +146,8 @@ def modifica_ricetta_risultato():
         # Nuova ricetta inserita con successo nel database
         if db_inter.new_ricetta(nome, tag_primario) != -1:
             # modificato anche il titolo
-            db_inter.elimina_ricetta(id)
-            util.elimina(old_nome)
+            db_inter.elimina_ricetta(id_num)
+            util.elimina(id_num)
             flag = 1
         else:
             # ricetta già esistente con il nuovo titolo
@@ -155,8 +156,9 @@ def modifica_ricetta_risultato():
         flag = 1
 
     if flag == 1:
-        util.scrivi(nome, ingredienti, testo)
-        db_inter.cambia_tag_primario(id, tag_primario)
+        new_id_num = db_inter.nome_to_id(nome)
+        util.scrivi(new_id_num, ingredienti, testo)
+        db_inter.cambia_tag_primario(id_num, tag_primario)
         flag = 1
 
     return render_template("modifica_ricetta_risultato.html", flag=flag)

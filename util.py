@@ -11,18 +11,12 @@ ext=".txt"
 #Separatore nel testo interno tra ingredienti e testo
 separatore="#############"
 
-
-def nome_to_underscore(nome):
-    for c in [" ", "'", ",", "."]:
-        nome=nome.replace(c, "_")
-    return nome
-
-def nome_to_link(nome):
-    nome=nome_to_underscore(nome) + ext
+def id_to_link(id_num):
+    nome = "ricetta_" + str(id_num) + ext
     return ricette + nome
 
-def leggi(nome):
-    link=nome_to_link(nome)
+def leggi(id_num):
+    link=id_to_link(id_num)
     f=open(link, "r")
     testo_completo=f.read()
     f.close()
@@ -37,9 +31,9 @@ def leggi(nome):
     # rappresentano gli ingredienti
     return [testo, ingredienti]
 
-def scrivi(nome, ingredienti, testo):
-    link=nome_to_link(nome)
-    f=open(link, "w+")
+def scrivi(id_num, ingredienti, testo):
+    link = id_to_link(id_num)
+    f = open(link, "w+")
 
     for elem in ingredienti:
         f.write(elem+"\n")
@@ -51,6 +45,6 @@ def scrivi(nome, ingredienti, testo):
         f.write(riga.rstrip("/n"))
     f.close()
 
-def elimina(nome):
-    link = nome_to_link(nome)
+def elimina(id_num):
+    link = id_to_link(id_num)
     os.remove(link)
