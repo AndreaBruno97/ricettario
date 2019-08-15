@@ -39,6 +39,44 @@
 
             <p><a href="{{ url_for("modifica_ricetta", id=id)}}">Annulla</a></p>
         </form>
+
+    <!--
+        flag =  1: successo per operazione di modifica
+        flag = -1: fallimento: non è stato inserito testo
+        flag = -2: fallimento: Ricetta già esistente
+        flag = -3: fallimento: non è stato inserito titolo
+        flag = -4: fallimento: non sono stati inseriti ingredienti
+        flag = -5: fallimento: non è stato inserito un tag primari
+    -->
+
+    {% if flag==1 %}
+        <!--Successo modifica-->
+        <h1>Successo</h1>
+            <p>La ricetta è stata modificata nel ricettario!</p>
+    {% elif flag==-1 %}
+        <!--Fallimento: no testo-->
+        <h1>Errore</h1>
+            <p>Non hai inserito il testo della ricetta</p>
+    {% elif flag==-2 %}
+        <!--Fallimento: Ricetta esistente-->
+        <h1>Errore</h1>
+            <p>La ricetta esiste già nel ricettario</p>
+    {% elif flag==-3 %}
+        <!--Fallimento: no titolo-->
+        <h1>Errore</h1>
+            <p>Non hai inserito il titolo della ricetta</p>
+    {% elif flag==-4 %}
+        <!--Fallimento: no ingredienti-->
+        <h1>Errore</h1>
+            <p>Non hai inserito ingredienti nella ricetta</p>
+    {% elif flag==-5 %}
+        <!--Fallimento: no tag primario-->
+        <h1>Errore</h1>
+            <p>Non hai inserito un tag primario nella ricetta</p>
+
+    {% endif %}
+
+    <p><a href="{{ url_for("elenco") }}">Vedi le tue ricette</a></p>
     <p><a href="{{ url_for("root") }}">Ritorna alla pagina principale</a></p>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

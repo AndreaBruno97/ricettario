@@ -2,10 +2,9 @@
 File principale, gestisce le ridirezioni delle pagine
 """
 
-from flask import Flask, render_template, redirect, url_for, request, session
+from flask import Flask, render_template, redirect, url_for, request
 import util
 import db_inter
-from enum import Enum
 
 app = Flask(__name__)
 
@@ -41,20 +40,6 @@ def ricetta(id):
 @app.route("/nuova_ricetta/<flag>")
 def nuova_ricetta(flag):
     return render_template("nuova_ricetta.html", flag=int(flag))
-
-@app.route("/conferma_eliminazione/<id>")
-def conferma_eliminazione(id):
-    return render_template("conferma_eliminazione.html", id=id)
-
-@app.route("/elimina_ricetta/<id>")
-def elimina_ricetta(id):
-    nome = db_inter.id_to_nome(id)
-    if (len(nome) != 0 and db_inter.elimina_ricetta(id) != -1):
-        util.elimina(id)
-        flag=0
-    else:
-        flag=1
-    return render_template("elimina_ricetta.html", flag=int(flag))
 
 @app.route("/nuova_ricetta/insert", methods=["POST"])
 def nuova_ricetta_insert():
@@ -96,14 +81,31 @@ def nuova_ricetta_insert():
         flag = -2
     return redirect(url_for("nuova_ricetta", flag=flag))
 
-@app.route("/modifica_ricetta/<id>")
-def modifica_ricetta(id):
+@app.route("/elimina_ricetta/<id>")
+def elimina_ricetta(id):
+    nome = db_inter.id_to_nome(id)
+    if (len(nome) != 0 and db_inter.elimina_ricetta(id) != -1):
+        util.elimina(id)
+        flag=0
+    else:
+        flag=1
+    return render_template("elimina_ricetta.html", flag=int(flag))
+
+@app.route("/conferma_eliminazione/<id>")
+def conferma_eliminazione(id):
+    return render_template("conferma_eliminazione.html", id=id)
+
+@app.route("/modifica_ricetta", methods=['GET'])
+def modifica_ricetta():
+    id = request.args.get('id')
+    flag = request.args.get('flag')
+
     nome = db_inter.id_to_nome(id)
     tag_primario = db_inter.id_to_tag_primario(id)
     leggi_tmp = util.leggi(id)
     testo = leggi_tmp[0]
     ingredienti = leggi_tmp[1]
-    return render_template("modifica_ricetta.html", id=id, nome=nome, tag_primario=tag_primario, testo=testo, ingredienti=ingredienti, num=len(ingredienti))
+    return render_template("modifica_ricetta.html", id=id, flag=flag, nome=nome, tag_primario=tag_primario, testo=testo, ingredienti=ingredienti, num=len(ingredienti))
 
 @app.route("/modifica_ricetta/risultato", methods=["POST"])
 def modifica_ricetta_risultato():
@@ -148,6 +150,7 @@ def modifica_ricetta_risultato():
             # modificato anche il titolo
             db_inter.elimina_ricetta(id_num)
             util.elimina(id_num)
+            id_num = db_inter.nome_to_id(nome)
             flag = 1
         else:
             # ricetta già esistente con il nuovo titolo
@@ -156,12 +159,11 @@ def modifica_ricetta_risultato():
         flag = 1
 
     if flag == 1:
-        new_id_num = db_inter.nome_to_id(nome)
-        util.scrivi(new_id_num, ingredienti, testo)
+        util.scrivi(id_num, ingredienti, testo)
         db_inter.cambia_tag_primario(id_num, tag_primario)
         flag = 1
 
-    return render_template("modifica_ricetta_risultato.html", flag=flag)
+    return render_template("modifica_ricetta.html", id=id_num, flag=flag, nome=nome, tag_primario=tag_primario, testo=testo, ingredienti=ingredienti, num=len(ingredienti))
 
 if __name__ == '__main__':
     app.run()

@@ -15,11 +15,15 @@
         {% for ricetta in lista %}
             <li>
             <a href="{{ url_for("ricetta", id=ricetta[0]) }}">{{ ricetta[1] }}</a>
+            <a href="{{ url_for("modifica_ricetta", id=ricetta[0])}}">Modifica</a>
+            <a href="{{ url_for("conferma_eliminazione", id=ricetta[0]) }}">Elimina</a>
             </li>
         {% endfor %}
         </ul>
     {% endif %}
+
     <p><a href="{{ url_for("nuova_ricetta", flag=0) }}">Inserisci una nuova ricetta</a></p>
     <p><a href="{{ url_for("root") }}">Ritorna alla pagina principale</a></p>
+
 </body>
 </html>
