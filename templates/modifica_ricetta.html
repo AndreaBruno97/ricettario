@@ -40,6 +40,8 @@
             <p><a href="{{ url_for("modifica_ricetta", id=id)}}">Annulla</a></p>
         </form>
 
+        <a href="{{ url_for("elimina_ricetta", id=id) }}">Elimina</a>
+
     <!--
         flag =  1: successo per operazione di modifica
         flag = -1: fallimento: non è stato inserito testo
@@ -76,7 +78,7 @@
 
     {% endif %}
 
-    <p><a href="{{ url_for("elenco") }}">Vedi le tue ricette</a></p>
+    <p><a href="{{ url_for("elenco", flag=0) }}">Vedi le tue ricette</a></p>
     <p><a href="{{ url_for("root") }}">Ritorna alla pagina principale</a></p>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

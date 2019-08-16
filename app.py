@@ -22,13 +22,13 @@ Legenda Tag Primari:
 def root():
     return render_template("root.html")
 
-@app.route("/elenco")
-def elenco():
+@app.route("/elenco/<flag>")
+def elenco(flag):
     lista = db_inter.all_ricette()
     num = len(lista)
-    return render_template("elenco.html", lista=lista, num=num)
+    return render_template("elenco.html", flag=int(flag), lista=lista, num=num)
 
-@app.route("/elenco/<id>")
+@app.route("/elenco/ricetta/<id>")
 def ricetta(id):
     nome = db_inter.id_to_nome(id)
     tag_primario = db_inter.id_to_tag_primario(id)
@@ -83,17 +83,20 @@ def nuova_ricetta_insert():
 
 @app.route("/elimina_ricetta/<id>")
 def elimina_ricetta(id):
+    """
+        flag =  0: Pagina standard
+        flag =  1: Successo eliminazione
+        flag = -1: Successo eliminazione
+    """
+
     nome = db_inter.id_to_nome(id)
+
     if (len(nome) != 0 and db_inter.elimina_ricetta(id) != -1):
         util.elimina(id)
-        flag=0
-    else:
         flag=1
-    return render_template("elimina_ricetta.html", flag=int(flag))
-
-@app.route("/conferma_eliminazione/<id>")
-def conferma_eliminazione(id):
-    return render_template("conferma_eliminazione.html", id=id)
+    else:
+        flag=-1
+    return redirect(url_for("elenco", flag=int(flag)))
 
 @app.route("/modifica_ricetta", methods=['GET'])
 def modifica_ricetta():

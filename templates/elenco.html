@@ -16,10 +16,25 @@
             <li>
             <a href="{{ url_for("ricetta", id=ricetta[0]) }}">{{ ricetta[1] }}</a>
             <a href="{{ url_for("modifica_ricetta", id=ricetta[0])}}">Modifica</a>
-            <a href="{{ url_for("conferma_eliminazione", id=ricetta[0]) }}">Elimina</a>
+            <a href="{{ url_for("elimina_ricetta", id=ricetta[0]) }}">Elimina</a>
             </li>
         {% endfor %}
         </ul>
+    {% endif %}
+
+    <!--
+        flag = 0: Pagina standard
+        flag =  1: Successo eliminazione
+        flag =  -1: Successo eliminazione
+    -->
+    {% if flag==1 %}
+        <!--Successo eliminazione-->
+        <h1>Successo</h1>
+            <p>La ricetta è stata eliminata dal ricettario!</p>
+    {% elif flag==-1 %}
+        <!--Fallimento eliminazione-->
+        <h1>Errore</h1>
+            <p>Questa ricetta non esiste</p>
     {% endif %}
 
     <p><a href="{{ url_for("nuova_ricetta", flag=0) }}">Inserisci una nuova ricetta</a></p>
