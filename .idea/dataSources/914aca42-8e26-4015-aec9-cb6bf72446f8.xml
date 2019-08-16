@@ -1327,47 +1327,65 @@
     </collation>
     <table id="333" parent="2" name="tasks"/>
     <table id="334" parent="7" name="ricettario"/>
-    <column id="335" parent="333" name="id_task">
+    <table id="335" parent="7" name="tag_sec"/>
+    <column id="336" parent="333" name="id_task">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="336" parent="333" name="todo">
+    <column id="337" parent="333" name="todo">
       <Position>2</Position>
       <DataType>varchar(100)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="337" parent="333" name="urgent">
+    <column id="338" parent="333" name="urgent">
       <Position>3</Position>
       <DataType>tinyint(1)|0s</DataType>
       <DefaultExpression>0</DefaultExpression>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="338" parent="333" name="PRIMARY">
+    <key id="339" parent="333" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id_task</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="339" parent="334" name="id">
+    <column id="340" parent="334" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="340" parent="334" name="nome">
+    <column id="341" parent="334" name="nome">
       <Position>2</Position>
       <DataType>varchar(200)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="341" parent="334" name="tag_primario">
+    <column id="342" parent="334" name="tag_primario">
       <Position>3</Position>
       <DataType>varchar(200)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="342" parent="334" name="PRIMARY">
+    <key id="343" parent="334" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="344" parent="335" name="id">
+      <Position>1</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="345" parent="335" name="tag">
+      <Position>2</Position>
+      <DataType>varchar(200)|0s</DataType>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <key id="346" parent="335" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>

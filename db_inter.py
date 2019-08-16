@@ -4,6 +4,8 @@ Funzioni che permettono l'interazione col database
 
 import pymysql
 
+# Funzioni generali
+
 def connetti():
     return pymysql.connect(user='root', password='root',
                            host='localhost', database='')
@@ -53,6 +55,7 @@ def controllo_risultato_pluri(result):
         return result
 
 
+# Funzioni relative alla tabella "ricettario"
 
 def all_ricette():
     # Ritorna id e nome di tutte le ricette nel database
@@ -70,7 +73,7 @@ def new_ricetta(nome, tag_primario):
         return -1
 
 def elimina_ricetta(id):
-    # Elimina dal database una nuova ricetta
+    # Elimina dal database una ricetta
 
     # Controllo se la ricetta esiste
     result=id_to_nome(id)
@@ -119,3 +122,44 @@ def tag_primario_to_id(tag):
 def cambia_tag_primario(id, tag):
     # Modifica il tag primario di una ricetta dato il suo id
     esegui_query_modifica("update ricettario.ricettario set tag_primario=%s where id=%s", (tag, id))
+
+
+#Funzioni relative alla tabella "tag_sec"
+
+def all_tag_sec():
+    # Ritorna id e nome di tutti i tag secondari nel database
+    return esegui_query_ricerca("select id, tag from ricettario.tag_sec", None)
+
+def new_tag_sec(tag):
+    # Inserisce nel database un nuovo tag secondario, se possibile
+
+    # Controllo se lil tag secondario esiste già
+    id=tag_sec_to_id(tag)
+
+    if(id<0):
+        esegui_query_modifica("insert into ricettario.tag_sec(tag) values (%s)", (tag, ))
+    else:
+        return -1
+
+def elimina_tag_sec(id):
+    # Elimina dal database un tag secondario
+
+    # Controllo se la ricetta esiste
+    result=id_to_tag_sec(id)
+
+    if len(result)!= 0:
+        esegui_query_modifica("delete from ricettario.tag_sec where id=%s", (id, ))
+    else:
+        return -1
+
+def id_to_tag_sec(id):
+    # Ritorna il tag secondario dato l'id
+    result = esegui_query_ricerca("select tag from ricettario.tag_sec where id=%s", (id,))
+
+    return controllo_risultato_mono(result)
+
+def tag_sec_to_id(tag):
+    # Ritorna l'id di una ricetta dato il tag secondario
+    result = esegui_query_ricerca("select id from ricettario.tag_sec where binary tag=%s", (tag,))
+
+    return controllo_risultato_mono(result)

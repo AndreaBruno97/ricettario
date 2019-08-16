@@ -163,7 +163,51 @@ def modifica_ricetta_risultato():
         db_inter.cambia_tag_primario(id_num, tag_primario)
         flag = 1
 
-    return render_template("modifica_ricetta.html", id=id_num, flag=flag, nome=nome, tag_primario=tag_primario, testo=testo, ingredienti=ingredienti, num=len(ingredienti))
+    return render_template("modifica_ricetta.html", id_num=id_num, flag=flag, nome=nome, tag_primario=tag_primario, testo=testo, ingredienti=ingredienti, num=len(ingredienti))
+
+@app.route("/tag_secondari/<flag>")
+def tag_secondari(flag):
+    lista = db_inter.all_tag_sec()
+    num = len(lista)
+    return render_template("tag_secondari.html", lista=lista, num=num, flag=int(flag))
+
+@app.route("/nuovo_tag_secondario/insert", methods=["POST"])
+def nuovo_tag_secondario_insert():
+    """
+    flag:
+         0 -> pagina standard
+         1 -> successo inserimento
+        -1 -> fallimento inserimento: no tag secondario
+        -2 -> fallimento inserimento: tag secondario esistente
+    """
+
+    tag = request.form["tag"]
+
+    if len(tag) == 0:
+        # Non c'è tag secondario
+        flag = -1
+    elif db_inter.new_tag_sec(tag) != -1:
+        # Operazione completata
+        flag = 1
+    else:
+        # Tag secondario esistente
+        flag = -2
+    return redirect(url_for("tag_secondari", flag=flag))
+
+@app.route("/elimina_tag_secondario/<id>")
+def elimina_tag_secondario(id):
+    """
+    flag:
+         0 -> pagina standard
+         2 -> successo eliminazione
+        -3 -> fallimento eliminazione: no tag secondario
+    """
+    tag = db_inter.id_to_tag_sec(id)
+    if (len(tag) != 0 and db_inter.elimina_tag_sec(id) != -1):
+        flag=2
+    else:
+        flag=-3
+    return redirect(url_for("tag_secondari", flag=flag))
 
 if __name__ == '__main__':
     app.run()

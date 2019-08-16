@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tag secondari</title>
+</head>
+<body>
+    <h1>Tag secondari</h1>
+    <form action="{{ url_for("nuovo_tag_secondario_insert") }}" method="post">
+        <p>Nuovo tag secondario: <input type="text" name = "tag"></p>
+        <input type="submit" value="Inserisci il tag">
+    </form>
+
+    <!--
+        flag =  0: inserimento di un nuovo tag secondario
+        flag =  1: successo per operazione di inserimento
+        flag = -1: fallimento: non è stato inserito testo
+        flag = -2: fallimento: tag secondario già esistente
+    -->
+
+    {% if flag==1 %}
+        <!--Successo inserimento-->
+        <h1>Successo</h1>
+            <p>Il tag secondario è stato aggiunto alla lista!</p>
+    {% elif flag==-1 %}
+        <!--Fallimento: no testo-->
+        <h1>Errore</h1>
+            <p>Non hai inserito il nome del tag secondario</p>
+    {% elif flag==-2 %}
+        <!--Fallimento: Tag secondario esistente-->
+        <h1>Errore</h1>
+            <p>Il tag secondario esiste già nell'elenco</p>
+    {% endif %}
+
+    {% if num == 0 %}
+        <p>Peccato, ancora non ci sono tag secondari</p>
+        <p>Torna tra un po' per vedere i tuoi tag secondari</p>
+    {% else %}
+    <p>Elenco dei tag secondari:</p>
+        <ul>
+        {% for tag in lista %}
+            <li>
+            {{ tag[1] }}
+            <a href="{{ url_for("elimina_tag_secondario", id=tag[0]) }}">Elimina</a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if flag==2 %}
+        <!--Successo eliminazione-->
+        <h1>Successo</h1>
+            <p>Il tag secondario è stato eliminato dalla lista!</p>
+    {% elif flag==-3 %}
+        <!--Fallimento eliminazione: no tag secondario-->
+        <h1>Errore</h1>
+            <p>Tag secondario non esistente</p>
+    {% endif %}
+
+    <p><a href="{{ url_for("root") }}">Ritorna alla pagina principale</a></p>
+
+</body>
+</html>
