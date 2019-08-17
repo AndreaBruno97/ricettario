@@ -2,7 +2,7 @@
 File principale, gestisce le ridirezioni delle pagine
 """
 
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, jsonify
 import util
 import db_inter
 
@@ -238,6 +238,18 @@ def elimina_tag_secondario(id):
     else:
         flag=-3
     return redirect(url_for("tag_secondari", flag=flag))
+
+# REST API per ricevere nuovi tag secondari
+@app.route("/nuovo_tag/<tag>", methods=["GET"])
+def nuovo_tag(tag):
+    """
+    Riceve il nome del nuovo tag secondario,
+    lo inserisce nel database e restituisce
+    l'id del tag secondario
+    """
+
+    db_inter.new_tag_sec(tag)
+    return jsonify(db_inter.tag_sec_to_id(tag))
 
 if __name__ == '__main__':
     app.run()
