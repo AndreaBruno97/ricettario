@@ -4,6 +4,15 @@ Funzioni che permettono l'interazione col database
 
 import pymysql
 
+"""
+Formato degli array generati automaticamente:
+[1, 2, 3, 4, 5, 6, 7, 8, 9]
+"""
+
+def ricerca_tag_regex(tag):
+    #"[num," oppure ", num," oppure ", num]"
+    return "\[" + tag + ",%|%, " + tag + ",%|%, " + tag + "\]"
+
 # Funzioni generali
 
 def connetti():
@@ -61,14 +70,14 @@ def all_ricette():
     # Ritorna id e nome di tutte le ricette nel database
     return esegui_query_ricerca("select id, nome from ricettario.ricettario", None)
 
-def new_ricetta(nome, tag_primario):
+def new_ricetta(nome, tag_primario, tag_secondari):
     # Inserisce nel database una nuova ricetta, se possibile
 
     # Controllo se la ricetta esiste già
     id=nome_to_id(nome)
 
     if(id<0):
-        esegui_query_modifica("insert into ricettario.ricettario(nome, tag_primario) values (%s, %s)", (nome, tag_primario))
+        esegui_query_modifica("insert into ricettario.ricettario(nome, tag_primario, tag_secondari) values (%s, %s, %s)", (nome, tag_primario, tag_secondari))
     else:
         return -1
 
@@ -119,9 +128,39 @@ def tag_primario_to_id(tag):
 
     return controllo_risultato_pluri(result)
 
+def nome_to_tag_secondari(nome):
+    # Ritorna un array con i tag secondari dato il nome della ricetta
+    result = esegui_query_ricerca("select tag_secondari from ricettario.ricettario where binary nome=%s", (nome, ))
+
+    return controllo_risultato_mono(result)
+
+def id_to_tag_secondari(id):
+    # Ritorna un array con i tag secondari dato l'id della ricetta
+    result = esegui_query_ricerca("select tag_secondari from ricettario.ricettario where id=%s", (id, ))
+
+    return controllo_risultato_mono(result)
+
+def tag_secondario_to_nome(tag):
+    # Ritorna tutti i nomi di ricette con il dato tag secondario
+    regex_tag = ricerca_tag_regex(tag)
+    result = esegui_query_ricerca("select nome from ricettario.ricettario where tag_secondario regexp " + regex_tag, None)
+
+    return controllo_risultato_pluri(result)
+
+def tag_secondario_to_id(tag):
+    # Ritorna tutti gli id di ricette con il dato tag secondario
+    regex_tag = ricerca_tag_regex(tag)
+    result = esegui_query_ricerca("select id from ricettario.ricettario where tag_secondario regexp " + regex_tag, None)
+
+    return controllo_risultato_pluri(result)
+
 def cambia_tag_primario(id, tag):
     # Modifica il tag primario di una ricetta dato il suo id
     esegui_query_modifica("update ricettario.ricettario set tag_primario=%s where id=%s", (tag, id))
+
+def cambia_tag_secondari(id, tag):
+    # Modifica i tag secondari di una ricetta dato il suo id
+    esegui_query_modifica("update ricettario.ricettario set tag_secondari=%s where id=%s", (tag, id))
 
 
 #Funzioni relative alla tabella "tag_sec"

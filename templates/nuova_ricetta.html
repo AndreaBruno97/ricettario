@@ -19,6 +19,14 @@
             <input type="radio" name="tag_primario" id="tag_prim_Contorni" value="Contorni">Contorni
             <input type="radio" name="tag_primario" id="tag_prim_Dolci" value="Dolci">Dolci
         </p>
+
+        <p>
+            <!--Tag secondari-->
+            {% for i in range(num) %}
+                <input type="checkbox" name="tag_{{ id_tag[i] }}" value="{{ id_tag[i] }}" /> {{ tag[i] }}
+            {% endfor %}
+        </p>
+
         <p>Ingredienti:
             <div id="ingredienti"></div>
             <button id="ingr_btn" type="button">Nuovo</button>

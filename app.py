@@ -18,6 +18,11 @@ Legenda Tag Primari:
     Dolci
 """
 
+"""
+Formato degli array generati automaticamente:
+[1, 2, 3, 4, 5, 6, 7, 8, 9]
+"""
+
 @app.route("/")
 def root():
     return render_template("root.html")
@@ -39,7 +44,13 @@ def ricetta(id):
 
 @app.route("/nuova_ricetta/<flag>")
 def nuova_ricetta(flag):
-    return render_template("nuova_ricetta.html", flag=int(flag))
+    tag_secondari=db_inter.all_tag_sec()
+    id_tag=[]
+    tag=[]
+    for coppia_tag in tag_secondari:
+        id_tag.append(coppia_tag[0])
+        tag.append(coppia_tag[1])
+    return render_template("nuova_ricetta.html", flag=int(flag), id_tag=id_tag, tag=tag, num=len(tag_secondari[1]))
 
 @app.route("/nuova_ricetta/insert", methods=["POST"])
 def nuova_ricetta_insert():
@@ -56,6 +67,16 @@ def nuova_ricetta_insert():
     nome = request.form["nome"]
     testo = request.form["testo"]
     tag_primario = request.form.get("tag_primario", None)
+
+    tag_secondari_db = db_inter.all_tag_sec()
+    tag_secondari = []
+    for coppia_tag in tag_secondari_db:
+        i=coppia_tag[0]
+        tag_sec_scelta= request.form.get("tag_"+str(i), None)
+        if tag_sec_scelta != None:
+            tag_secondari.append(i)
+
+
     ingredienti = []
     list_id = request.form["elenco_ingr"].split(',')
     if list_id[0] != '':
@@ -73,7 +94,7 @@ def nuova_ricetta_insert():
     elif tag_primario == None:
         # non c'è tag primario
         flag = -5
-    elif db_inter.new_ricetta(nome, tag_primario) != -1:
+    elif db_inter.new_ricetta(nome, tag_primario, str(tag_secondari)) != -1:
         new_id = db_inter.nome_to_id(nome)
         util.scrivi(new_id, ingredienti, testo)
         flag = 1
