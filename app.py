@@ -40,7 +40,13 @@ def ricetta(id):
     leggi_tmp = util.leggi(id)
     testo = leggi_tmp[0]
     ingredienti = leggi_tmp[1]
-    return render_template("ricetta.html", nome=nome, tag_primario=tag_primario, testo=testo, id=id, ingredienti=ingredienti, num=len(ingredienti))
+    tag_secondari_str=db_inter.id_to_tag_secondari(id)
+    tag_secondari_id=eval(tag_secondari_str)
+    tag_secondari=[]
+    for tag_id in tag_secondari_id:
+        tag_secondari.append(db_inter.id_to_tag_sec(tag_id))
+
+    return render_template("ricetta.html", nome=nome, tag_primario=tag_primario, tag_secondari=tag_secondari, num_tag_secondari=len(tag_secondari), testo=testo, id=id, ingredienti=ingredienti, num_ingredienti=len(ingredienti))
 
 @app.route("/nuova_ricetta/<flag>")
 def nuova_ricetta(flag):

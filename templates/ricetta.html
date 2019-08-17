@@ -7,8 +7,19 @@
 <body>
     <h1>{{ nome }}</h1>
     <p>{{ tag_primario }}</p>
+
+    <!--Tag secondari-->
+    <p>Tag secondari</p>
     <ul>
-        {% for i in range(0, num) %}
+        {% for i in range(0, num_tag_secondari) %}
+            <li>{{ tag_secondari[i] }}</li>
+        {% endfor %}
+    </ul>
+
+    <!--Ingredienti-->
+    <p>Ingredienti</p>
+    <ul>
+        {% for i in range(0, num_ingredienti) %}
             <li>{{ ingredienti[i] }}</li>
         {% endfor %}
     </ul>
