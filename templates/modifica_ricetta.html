@@ -47,7 +47,7 @@
             <p><a href="{{ url_for("modifica_ricetta", id=id)}}">Annulla</a></p>
         </form>
 
-        <a href="{{ url_for("elimina_ricetta", id=id) }}">Elimina</a>
+        <a href="{{ url_for("elimina_ricetta", id=id) }}", class="conferma_elim">Elimina</a>
 
     <!--
         flag =  1: successo per operazione di modifica
@@ -92,6 +92,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
     <script src="/static/js/nuovo_ingrediente.js"></script>
     <script src="/static/js/modifica_selezione_tag.js"></script>
+    <script src="/static/js/conferma_eliminazione.js"></script>
 
 </body>
 </html>
