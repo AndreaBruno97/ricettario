@@ -40,7 +40,7 @@ def ricetta(id):
     leggi_tmp = util.leggi(id)
     testo = leggi_tmp[0]
     ingredienti = leggi_tmp[1]
-    tag_secondari_str=db_inter.id_to_tag_secondari(id)
+    tag_secondari_str=db_inter.id_ricetta_to_tag_secondari(id)
     tag_secondari_id=eval(tag_secondari_str)
     tag_secondari=[]
     for tag_id in tag_secondari_id:
@@ -56,7 +56,7 @@ def nuova_ricetta(flag):
     for coppia_tag in tag_secondari:
         id_tag.append(coppia_tag[0])
         tag.append(coppia_tag[1])
-    return render_template("nuova_ricetta.html", flag=int(flag), id_tag=id_tag, tag=tag, num=len(tag_secondari[1]))
+    return render_template("nuova_ricetta.html", flag=int(flag), id_tag=id_tag, tag=tag, num=len(tag))
 
 @app.route("/nuova_ricetta/insert", methods=["POST"])
 def nuova_ricetta_insert():
@@ -88,6 +88,7 @@ def nuova_ricetta_insert():
     if list_id[0] != '':
         for i in list_id:
             ingredienti.append(request.form["id_" + i])
+
     if len(testo) == 0:
         # non c'è testo
         flag = -1
@@ -135,7 +136,19 @@ def modifica_ricetta():
     leggi_tmp = util.leggi(id)
     testo = leggi_tmp[0]
     ingredienti = leggi_tmp[1]
-    return render_template("modifica_ricetta.html", id=id, flag=flag, nome=nome, tag_primario=tag_primario, testo=testo, ingredienti=ingredienti, num=len(ingredienti))
+
+    tag_secondari=db_inter.all_tag_sec()
+    id_tag=[]
+    tag=[]
+    for coppia_tag in tag_secondari:
+        id_tag.append(coppia_tag[0])
+        tag.append(coppia_tag[1])
+
+    tag_sec_scelti_array=eval(db_inter.id_ricetta_to_tag_secondari(id))
+    # Adattamento formato array per invio a javascript
+    tag_sec_scelti=str(tag_sec_scelti_array)[1:-1].replace(" ", "")
+
+    return render_template("modifica_ricetta.html", id=id, flag=flag, nome=nome, tag_primario=tag_primario, testo=testo, ingredienti=ingredienti, num_ingr=len(ingredienti), id_tag=id_tag, tag=tag, num_tag=len(tag), tag_sec_scelti=tag_sec_scelti)
 
 @app.route("/modifica_ricetta/risultato", methods=["POST"])
 def modifica_ricetta_risultato():
@@ -160,6 +173,14 @@ def modifica_ricetta_risultato():
         for i in list_id:
             ingredienti.append(request.form["id_"+i])
 
+    tag_secondari_db = db_inter.all_tag_sec()
+    tag_secondari = []
+    for coppia_tag in tag_secondari_db:
+        i = coppia_tag[0]
+        tag_sec_scelta = request.form.get("tag_" + str(i), None)
+        if tag_sec_scelta != None:
+            tag_secondari.append(i)
+
     old_nome = db_inter.id_to_nome(id_num)
 
     if len(testo) == 0:
@@ -176,7 +197,7 @@ def modifica_ricetta_risultato():
         flag = -5
     elif nome != old_nome:
         # Nuova ricetta inserita con successo nel database
-        if db_inter.new_ricetta(nome, tag_primario) != -1:
+        if db_inter.new_ricetta(nome, tag_primario, str(tag_secondari)) != -1:
             # modificato anche il titolo
             db_inter.elimina_ricetta(id_num)
             util.elimina(id_num)
@@ -191,9 +212,21 @@ def modifica_ricetta_risultato():
     if flag == 1:
         util.scrivi(id_num, ingredienti, testo)
         db_inter.cambia_tag_primario(id_num, tag_primario)
+        db_inter.cambia_tag_secondari(id_num, str(tag_secondari))
         flag = 1
 
-    return render_template("modifica_ricetta.html", id_num=id_num, flag=flag, nome=nome, tag_primario=tag_primario, testo=testo, ingredienti=ingredienti, num=len(ingredienti))
+    tag_secondari = db_inter.all_tag_sec()
+    id_tag = []
+    tag = []
+    for coppia_tag in tag_secondari:
+        id_tag.append(coppia_tag[0])
+        tag.append(coppia_tag[1])
+
+    tag_sec_scelti_array = eval(db_inter.id_ricetta_to_tag_secondari(id_num))
+    # Adattamento formato array per invio a javascript
+    tag_sec_scelti = str(tag_sec_scelti_array)[1:-1].replace(" ", "")
+
+    return render_template("modifica_ricetta.html", id=id_num, flag=flag, nome=nome, tag_primario=tag_primario, testo=testo, ingredienti=ingredienti, num_ingr=len(ingredienti), id_tag=id_tag, tag=tag, num_tag=len(tag), tag_sec_scelti=tag_sec_scelti)
 
 @app.route("/tag_secondari/<flag>")
 def tag_secondari(flag):

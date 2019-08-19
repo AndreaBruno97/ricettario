@@ -134,7 +134,7 @@ def nome_to_tag_secondari(nome):
 
     return controllo_risultato_mono(result)
 
-def id_to_tag_secondari(id):
+def id_ricetta_to_tag_secondari(id):
     # Ritorna un array con i tag secondari dato l'id della ricetta
     result = esegui_query_ricerca("select tag_secondari from ricettario.ricettario where id=%s", (id, ))
 

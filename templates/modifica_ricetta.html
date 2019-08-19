@@ -20,8 +20,15 @@
                     <input type="radio" name="tag_primario" id="tag_prim_Contorni" value="Contorni">Contorni
                     <input type="radio" name="tag_primario" id="tag_prim_Dolci" value="Dolci">Dolci
                 </p>
+            <p>
+                <!--Tag secondari-->
+                {% for i in range(num_tag) %}
+                    <input type="checkbox" id="tag_{{ id_tag[i] }}" name="tag_{{ id_tag[i] }}" value="{{ id_tag[i] }}" /> {{ tag[i] }}
+                {% endfor %}
+                <input type="hidden" id="tag_secondari_scelti" name="tag_secondari_scelti" value={{ tag_sec_scelti }} />
+            </p>
             <p>Ingredienti:
-                    {% for i in range(0, num) %}
+                    {% for i in range(0, num_ingr) %}
                     <div class='ingr' id={{ i }}>
                         <input type='text' name = 'id_{{ i }}' value={{ ingredienti[i] }}><button class='ingr' id={{ i }} type='button'>Cancella</button>
                     </div>
@@ -33,7 +40,7 @@
             </p>
             <p>Testo: <textarea name="testo" cols="40" rows="5">{{ testo }}</textarea></p>
             <input type="hidden" name="id" value={{ id }} />
-            <input id="count" type="hidden" name="count" value={{ num }}>
+            <input id="count" type="hidden" name="count" value={{ num_ingr }}>
                 <input id="elenco_ingr" type="hidden" name="elenco_ingr" value="[]">
             <input type="submit" value="Modifica la ricetta">
 
