@@ -11,7 +11,7 @@ Formato degli array generati automaticamente:
 
 def ricerca_tag_regex(tag):
     #"[num," oppure ", num," oppure ", num]"
-    return "\[" + tag + ",%|%, " + tag + ",%|%, " + tag + "\]"
+    return "'[[]" + tag + ",|, " + tag + ",|, " + tag + "[]]'"
 
 # Funzioni generali
 
@@ -61,8 +61,10 @@ def controllo_risultato_pluri(result):
     if len(result) == 0:
         return -1
     else:
-        return result
-
+        lista=[]
+        for tupla in result:
+            lista.append(tupla[0])
+        return lista
 
 # Funzioni relative alla tabella "ricettario"
 
@@ -143,14 +145,14 @@ def id_ricetta_to_tag_secondari(id):
 def tag_secondario_to_nome(tag):
     # Ritorna tutti i nomi di ricette con il dato tag secondario
     regex_tag = ricerca_tag_regex(tag)
-    result = esegui_query_ricerca("select nome from ricettario.ricettario where tag_secondario regexp " + regex_tag, None)
+    result = esegui_query_ricerca("select nome from ricettario.ricettario where tag_secondari regexp " + regex_tag, None)
 
     return controllo_risultato_pluri(result)
 
-def tag_secondario_to_id(tag):
-    # Ritorna tutti gli id di ricette con il dato tag secondario
+def tag_secondario_to_id_ricette(tag):
+    # Ritorna tutti gli id di ricette con il dato id del tag secondario
     regex_tag = ricerca_tag_regex(tag)
-    result = esegui_query_ricerca("select id from ricettario.ricettario where tag_secondario regexp " + regex_tag, None)
+    result = esegui_query_ricerca("select id from ricettario.ricettario where tag_secondari regexp " + regex_tag, None)
 
     return controllo_risultato_pluri(result)
 
@@ -183,11 +185,18 @@ def new_tag_sec(tag):
 def elimina_tag_sec(id):
     # Elimina dal database un tag secondario
 
-    # Controllo se la ricetta esiste
-    result=id_to_tag_sec(id)
+    # Controllo se il tag secondario esiste
+    tag=id_to_tag_sec(id)
 
-    if len(result)!= 0:
+    if len(tag)!= 0:
         esegui_query_modifica("delete from ricettario.tag_sec where id=%s", (id, ))
+        id_ricette=tag_secondario_to_id_ricette(id)
+        if id_ricette != -1:
+            for ricetta in id_ricette:
+                elenco_tag = eval(id_ricetta_to_tag_secondari(ricetta))
+                elenco_tag.remove(int(id))
+                cambia_tag_secondari(ricetta, str(elenco_tag))
+
     else:
         return -1
 
@@ -198,7 +207,7 @@ def id_to_tag_sec(id):
     return controllo_risultato_mono(result)
 
 def tag_sec_to_id(tag):
-    # Ritorna l'id di una ricetta dato il tag secondario
+    # Ritorna l'id di un tag secondario dato il suo nome
     result = esegui_query_ricerca("select id from ricettario.tag_sec where binary tag=%s", (tag,))
 
     return controllo_risultato_mono(result)
