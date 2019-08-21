@@ -281,10 +281,14 @@ def nuovo_tag(tag):
     Riceve il nome del nuovo tag secondario,
     lo inserisce nel database e restituisce
     l'id del tag secondario
+
+    -1 se il tag esiste già
     """
 
-    db_inter.new_tag_sec(tag)
-    return jsonify(db_inter.tag_sec_to_id(tag))
+    if db_inter.new_tag_sec(tag)!= -1:
+        return jsonify(db_inter.tag_sec_to_id(tag))
+    else:
+        return jsonify("-1")
 
 # REST API per eliminare un tag secondario
 @app.route("/elimina_tag/<id>", methods=["GET"])

@@ -16,7 +16,7 @@ $('#btn_tag_sec').click(function () {
                 alert("Successo inserimento tag secondario");
             }
             else{
-                alert("Errore inserimento tag secondario");
+                alert("Tag secondario già esistente");
             }
         }
     });
