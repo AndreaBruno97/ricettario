@@ -41,7 +41,7 @@
         {% for tag in lista %}
             <li>
             {{ tag[1] }}
-            <a href="{{ url_for("elimina_tag_secondario", id=tag[0]) }}">Elimina</a>
+            <a href="{{ url_for("elimina_tag_secondario", id=tag[0]) }}" class="conferma_elim_tag">Elimina</a>
             </li>
         {% endfor %}
         </ul>
@@ -58,6 +58,10 @@
     {% endif %}
 
     <p><a href="{{ url_for("root") }}">Ritorna alla pagina principale</a></p>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script src="/static/js/conferma_eliminazione.js"></script>
 
 </body>
 </html>
