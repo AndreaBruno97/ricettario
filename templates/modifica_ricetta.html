@@ -22,9 +22,13 @@
                 </p>
             <p>
                 <!--Tag secondari-->
-                {% for i in range(num_tag) %}
-                    <input type="checkbox" id="tag_{{ id_tag[i] }}" name="tag_{{ id_tag[i] }}" value="{{ id_tag[i] }}" /> {{ tag[i] }}
-                {% endfor %}
+                <div id="div_tag_sec">
+                    {% for i in range(num_tag) %}
+                        <input type="checkbox" id="tag_{{ id_tag[i] }}" name="tag_{{ id_tag[i] }}" value="{{ id_tag[i] }}" /> {{ tag[i] }}
+                    {% endfor %}
+                </div>
+                <input type="text" id="text_tag_sec"/>
+                <button id="btn_tag_sec" type="button">Nuovo</button>
                 <input type="hidden" id="tag_secondari_scelti" name="tag_secondari_scelti" value={{ tag_sec_scelti }} />
             </p>
             <p>Ingredienti:
@@ -93,6 +97,7 @@
     <script src="/static/js/nuovo_ingrediente.js"></script>
     <script src="/static/js/modifica_selezione_tag.js"></script>
     <script src="/static/js/conferma_eliminazione.js"></script>
+    <script src="/static/js/nuovo_tag_secondario.js"></script>
 
 </body>
 </html>

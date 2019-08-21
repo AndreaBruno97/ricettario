@@ -174,7 +174,7 @@ def all_tag_sec():
 def new_tag_sec(tag):
     # Inserisce nel database un nuovo tag secondario, se possibile
 
-    # Controllo se lil tag secondario esiste già
+    # Controllo se il tag secondario esiste già
     id=tag_sec_to_id(tag)
 
     if(id<0):

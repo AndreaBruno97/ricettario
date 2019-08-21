@@ -5,8 +5,10 @@ File principale, gestisce le ridirezioni delle pagine
 from flask import Flask, render_template, redirect, url_for, request, jsonify
 import util
 import db_inter
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 """
 Legenda Tag Primari:
@@ -283,6 +285,17 @@ def nuovo_tag(tag):
 
     db_inter.new_tag_sec(tag)
     return jsonify(db_inter.tag_sec_to_id(tag))
+
+# REST API per eliminare un tag secondario
+@app.route("/elimina_tag/<id>", methods=["GET"])
+def elimina_tag(id):
+    """
+    Riceve l'id di un tag secondario,
+    lo elimina dal database e restituisce
+    -1 in caso di errore
+    """
+
+    return jsonify(db_inter.elimina_tag_sec(id))
 
 if __name__ == '__main__':
     app.run()
