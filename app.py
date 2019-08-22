@@ -25,6 +25,14 @@ Formato degli array generati automaticamente:
 [1, 2, 3, 4, 5, 6, 7, 8, 9]
 """
 
+"""
+# Adattamento formato array per invio a javascript
+    tag_sec_scelti=str(tag_sec_scelti_array)[1:-1].replace(" ", "")
+    
+    ((103, 'IIIIIIIIIIII'), (104, 'sertyuj'))
+    (103,'IIIIIIIIIIII'),(104,'sertyuj')
+"""
+
 @app.route("/")
 def root():
     return render_template("root.html")
@@ -33,7 +41,12 @@ def root():
 def elenco(flag):
     lista = db_inter.all_ricette()
     num = len(lista)
-    return render_template("elenco.html", flag=int(flag), lista=lista, num=num)
+
+    lista_id=[]
+    for ricetta in lista:
+        lista_id.append(ricetta[0])
+    lista_str=str(lista_id)[1:-1].replace(" ", "")
+    return render_template("elenco.html", flag=int(flag), lista=lista, lista_str=lista_str, num=num)
 
 @app.route("/elenco/ricetta/<id>")
 def ricetta(id):
@@ -304,6 +317,35 @@ def api_all_ricette():
     list_ricette=util.tuple_to_array(db_inter.all_ricette())
 
     return jsonify(list_ricette)
+
+# REST API per ricevere tutte le ricette che contengono la stringa inviata negli ingredienti
+@app.route("/ricette_match_ingredienti/<nome>", methods=["GET"])
+def ricette_match_ingredienti(nome):
+    """
+    Riceve parte degli ingredienti delle ricette,
+    restituisce  gli id e i nomi di tutte le ricette che fanno match
+    """
+    tutte_ricette=db_inter.all_ricette()
+    list_id=[]
+    list_nomi=[]
+    for ric in tutte_ricette:
+        id_ric=ric[0]
+        nome_ric=ric[1]
+        ingredienti=util.leggi(id_ric)[1]
+        # flag:
+        # 0 -> ingrediente non presente
+        # 1 -> ingrediente presente
+
+        flag=0
+        for ing in ingredienti:
+            if nome in ing:
+                flag =1
+
+        if flag==1:
+            list_id.append(id_ric)
+            list_nomi.append(nome_ric)
+
+    return jsonify([list_id,list_nomi])
 
 if __name__ == '__main__':
     app.run()

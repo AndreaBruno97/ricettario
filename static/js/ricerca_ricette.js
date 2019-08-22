@@ -1,21 +1,34 @@
 //Gestisce la ricerca di ricette, date le informazioni fornite dall'utente
 
-function genera_elenco_ricette(lista) {
-               $(".elenco_ricette").remove();
-               lista_id=lista[0];
-               lista_nomi=lista[1];
-               for (i=0; i<lista_id.length; i++){
-                   $("#elenco_ul").append("<li class=\"elenco_ricette\">\n" +
-                       "<a href=\"{{ url_for(\"ricetta\", id="+lista_id[i]+") }}\">"+lista_nomi[i]+"</a>\n" +
-                       "<a href=\"{{ url_for(\"modifica_ricetta\", id="+lista_id[i]+")}}\">Modifica</a>\n" +
-                       "<a href=\"{{ url_for(\"elimina_ricetta\", id="+lista_id[i]+") }}\", class=\"conferma_elim_ricette\" id=\"id_"+lista_id[i]+"\">Elimina</a>\n" +
-                       "</li>");
-               }
-            }
+//Inizializzazione: elenco degli id delle ricette
+lista_ricette=document.getElementById("lista_ricette").value;
+var lista_id=[];
+for(ricetta of lista_ricette.split(",")){
+    lista_id.push(ricetta);
+}
+
+//Funzione che mostra solo le ricette nella lista passata come parametro
+function mostra_ricette_lista(lista){
+    for (id_ric of lista_id){
+        if (lista.includes( parseInt(id_ric, 10))){
+            $(".elenco_ricette#"+id_ric).show();
+        }
+        else{
+            $(".elenco_ricette#"+id_ric).hide();
+        }
+    }
+}
+
+//Bottone per reinserire tutte le ricette
+$("#btn_reset").click(function () {
+   for (id_ric of lista_id){
+       $(".elenco_ricette#"+id_ric).show();
+   }
+});
 
 //Bottone per la ricerca delle ricette, data una parte del nome
 $("#btn_nome").click(function () {
-   var nome = document.getElementById("ricerca_nome").value;
+   var nome = document.getElementById("text_nome").value;
    if(nome !==""){
        $.ajax({
            type: "GET",
@@ -26,24 +39,27 @@ $("#btn_nome").click(function () {
             },
 
             success: function (lista) {
-                genera_elenco_ricette(lista);
+                mostra_ricette_lista(lista[0]);
             }
        });
    }
 });
 
-//Bottone per reinserire tutte le ricette
-$("#btn_reset").click(function () {
-   $.ajax({
-       type: "GET",
-        url: "http://localhost:5000/api_all_ricette",
+//Bottone per la ricerca delle ricette, data una parte degli ingredienti
+$("#btn_ingredienti").click(function () {
+   var nome = document.getElementById("text_ingredienti").value;
+   if(nome !==""){
+       $.ajax({
+           type: "GET",
+            url: "http://localhost:5000/ricette_match_ingredienti/"+ nome,
 
-       error: function () {
-            alert("Errore ricerca ricette");
-        },
+           error: function () {
+                alert("Errore ricerca ricette");
+            },
 
-        success: function (lista) {
-            genera_elenco_ricette(lista);
-        }
-   });
+            success: function (lista) {
+                mostra_ricette_lista(lista[0]);
+            }
+       });
+   }
 });

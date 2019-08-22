@@ -11,20 +11,31 @@
         <p>Torna tra un po' per vedere le tue ricette</p>
     {% else %}
         <h1>Elenco di ricette:</h1>
-        <p>Ricerca per nome</p>
-        <input type="text" id="ricerca_nome">
-        <button type="button" id="btn_nome">Ricerca</button>
-        <button type="button" id="btn_reset">Reset</button>
 
+        <div id="ricerca_nome">
+            <p>Ricerca per nome:</p>
+            <input type="text" id="text_nome">
+            <button type="button" id="btn_nome">Ricerca</button>
+        </div>
+
+        <div id="ricerca_ingredienti">
+            <p>Ricerca per ingredienti:</p>
+            <input type="text" id="text_ingredienti">
+            <button type="button" id="btn_ingredienti">Ricerca</button>
+        </div>
+
+        <input type="hidden" id="lista_ricette" value={{ lista_str }}>
         <ul id="elenco_ul">
         {% for ricetta in lista %}
-            <li class="elenco_ricette">
+            <li class="elenco_ricette" id={{ ricetta[0] }}>
             <a href="{{ url_for("ricetta", id=ricetta[0]) }}">{{ ricetta[1] }}</a>
             <a href="{{ url_for("modifica_ricetta", id=ricetta[0])}}">Modifica</a>
             <a href="{{ url_for("elimina_ricetta", id=ricetta[0]) }}", class="conferma_elim_ricette" id="id_{{ ricetta[0] }}">Elimina</a>
             </li>
         {% endfor %}
         </ul>
+
+        <button type="button" id="btn_reset">Reset</button>
 
     {% endif %}
 
