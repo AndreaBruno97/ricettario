@@ -48,3 +48,16 @@ def scrivi(id_num, ingredienti, testo):
 def elimina(id_num):
     link = id_to_link(id_num)
     os.remove(link)
+
+def tuple_to_array(tupla):
+    """
+    Trasforma una tupla di coppie in un array di due elementi,
+    a loro volta array
+    """
+    a = []
+    b = []
+    for coppia in tupla:
+        a.append(coppia[0])
+        b.append(coppia[1])
+
+    return [a, b]

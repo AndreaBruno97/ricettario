@@ -11,15 +11,21 @@
         <p>Torna tra un po' per vedere le tue ricette</p>
     {% else %}
         <h1>Elenco di ricette:</h1>
-        <ul>
+        <p>Ricerca per nome</p>
+        <input type="text" id="ricerca_nome">
+        <button type="button" id="btn_nome">Ricerca</button>
+        <button type="button" id="btn_reset">Reset</button>
+
+        <ul id="elenco_ul">
         {% for ricetta in lista %}
-            <li>
+            <li class="elenco_ricette">
             <a href="{{ url_for("ricetta", id=ricetta[0]) }}">{{ ricetta[1] }}</a>
             <a href="{{ url_for("modifica_ricetta", id=ricetta[0])}}">Modifica</a>
             <a href="{{ url_for("elimina_ricetta", id=ricetta[0]) }}", class="conferma_elim_ricette" id="id_{{ ricetta[0] }}">Elimina</a>
             </li>
         {% endfor %}
         </ul>
+
     {% endif %}
 
     <!--
@@ -43,6 +49,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
     <script src="/static/js/conferma_eliminazione.js"></script>
+    <script src="/static/js/ricerca_ricette.js"></script>
 
 </body>
 </html>

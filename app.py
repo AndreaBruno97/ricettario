@@ -52,12 +52,10 @@ def ricetta(id):
 
 @app.route("/nuova_ricetta/<flag>")
 def nuova_ricetta(flag):
-    tag_secondari=db_inter.all_tag_sec()
-    id_tag=[]
-    tag=[]
-    for coppia_tag in tag_secondari:
-        id_tag.append(coppia_tag[0])
-        tag.append(coppia_tag[1])
+    tag_secondari=util.tuple_to_array(db_inter.all_tag_sec())
+    id_tag=tag_secondari[0]
+    tag=tag_secondari[1]
+
     return render_template("nuova_ricetta.html", flag=int(flag), id_tag=id_tag, tag=tag, num=len(tag))
 
 @app.route("/nuova_ricetta/insert", methods=["POST"])
@@ -139,12 +137,9 @@ def modifica_ricetta():
     testo = leggi_tmp[0]
     ingredienti = leggi_tmp[1]
 
-    tag_secondari=db_inter.all_tag_sec()
-    id_tag=[]
-    tag=[]
-    for coppia_tag in tag_secondari:
-        id_tag.append(coppia_tag[0])
-        tag.append(coppia_tag[1])
+    tag_secondari=util.tuple_to_array(db_inter.all_tag_sec())
+    id_tag=tag_secondari[0]
+    tag=tag_secondari[1]
 
     tag_sec_scelti_array=eval(db_inter.id_ricetta_to_tag_secondari(id))
     # Adattamento formato array per invio a javascript
@@ -217,12 +212,10 @@ def modifica_ricetta_risultato():
         db_inter.cambia_tag_secondari(id_num, str(tag_secondari))
         flag = 1
 
-    tag_secondari = db_inter.all_tag_sec()
-    id_tag = []
-    tag = []
-    for coppia_tag in tag_secondari:
-        id_tag.append(coppia_tag[0])
-        tag.append(coppia_tag[1])
+
+    tag_secondari=util.tuple_to_array(db_inter.all_tag_sec())
+    id_tag=tag_secondari[0]
+    tag=tag_secondari[1]
 
     tag_sec_scelti_array = eval(db_inter.id_ricetta_to_tag_secondari(id_num))
     # Adattamento formato array per invio a javascript
@@ -290,16 +283,27 @@ def nuovo_tag(tag):
     else:
         return jsonify("-1")
 
-# REST API per eliminare un tag secondario
-@app.route("/elimina_tag/<id>", methods=["GET"])
-def elimina_tag(id):
+# REST API per ricevere tutte le ricette che contengono la stringa inviata nel nome
+@app.route("/ricette_match_nome/<nome>", methods=["GET"])
+def ricerca_match_nome(nome):
     """
-    Riceve l'id di un tag secondario,
-    lo elimina dal database e restituisce
-    -1 in caso di errore
+    Riceve parte del nome delle ricette,
+    restituisce  gli id e i nomi di tutte le ricette che fanno match
     """
+    list_ricette=util.tuple_to_array(db_inter.ricette_match_nome(nome))
 
-    return jsonify(db_inter.elimina_tag_sec(id))
+    return jsonify(list_ricette)
+
+# REST API per ricevere tutte le ricette
+@app.route("/api_all_ricette", methods=["GET"])
+def api_all_ricette():
+    """
+    Riceve parte del nome delle ricette,
+    restituisce  gli id e i nomi di tutte le ricette che fanno match
+    """
+    list_ricette=util.tuple_to_array(db_inter.all_ricette())
+
+    return jsonify(list_ricette)
 
 if __name__ == '__main__':
     app.run()

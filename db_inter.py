@@ -72,6 +72,10 @@ def all_ricette():
     # Ritorna id e nome di tutte le ricette nel database
     return esegui_query_ricerca("select id, nome from ricettario.ricettario", None)
 
+def ricette_match_nome(nome):
+    # Ritorna id e nome di tutte le ricette nel database
+    return esegui_query_ricerca("select id, nome from ricettario.ricettario where nome regexp %s", (nome, ))
+
 def new_ricetta(nome, tag_primario, tag_secondari):
     # Inserisce nel database una nuova ricetta, se possibile
 
