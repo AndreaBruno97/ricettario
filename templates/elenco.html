@@ -5,7 +5,7 @@
     <title>Elenco delle ricette</title>
 </head>
 <body>
-    {% if num == 0 %}
+    {% if num_ricette == 0 %}
         <h1>Peccato, ancora non ci sono ricette</h1>
         <p><img src="static/piatto_vuoto.jpg"></p>
         <p>Torna tra un po' per vedere le tue ricette</p>
@@ -22,6 +22,27 @@
             <p>Ricerca per ingredienti:</p>
             <input type="text" id="text_ingredienti">
             <button type="button" id="btn_ingredienti">Ricerca</button>
+        </div>
+
+        <div id="ricerca_completo">
+            <p>Ricerca completa:</p>
+            Titolo: <input type="text" id="text_completo_nome">
+            Ingredienti: <input type="text" id="text_completo_ingr">
+            Tag primario:
+            <select id="text_completo_tag_prim">
+                <option value=""></option>
+                {% for tag in tag_primari %}
+                    <option value={{ tag }}>{{ tag }}</option>
+                {% endfor %}
+            </select>
+            Tag secondario:
+            <select id="text_completo_tag_sec">
+                <option value=""></option>
+                {% for tag in tag_secondari %}
+                    <option value={{ tag[0] }}>{{ tag[1] }}</option>
+                {% endfor %}
+            </select>
+            <button type="button" id="btn_completo">Ricerca</button>
         </div>
 
         <input type="hidden" id="lista_ricette" value={{ lista_str }}>

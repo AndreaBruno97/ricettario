@@ -1,8 +1,7 @@
-tag_primario=document.getElementById("tag_primario_scelto").value;
-document.getElementById("tag_prim_"+tag_primario).checked = true;
+tag_primario=$("#tag_primario_scelto").val();
+$("#tag_prim_"+tag_primario).checked = true;
 
-tag_secondari=document.getElementById("tag_secondari_scelti").value;
-alert(tag_secondari)
+tag_secondari=$("#tag_secondari_scelti").val();
 for (tag_id of tag_secondari.split(",")){
-    document.getElementById("tag_"+tag_id).checked = true;
+    $("#tag_"+tag_id).checked = true;
 }

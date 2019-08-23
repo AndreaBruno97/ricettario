@@ -4,7 +4,7 @@
  * e viene generato un array di interi [0, ... , id-1]
  */
 
-var id=document.getElementById("count").value;
+var id=$("#count").val();
 var elenco=[];
 var i=0;
 while (i<id){

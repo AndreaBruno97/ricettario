@@ -40,13 +40,16 @@ def root():
 @app.route("/elenco/<flag>")
 def elenco(flag):
     lista = db_inter.all_ricette()
-    num = len(lista)
+    num_ricette = len(lista)
+    tag_primari=["Antipasti", "Primi", "Secondi", "Piatti unici", "Contorni", "Dolci"]
+    tag_secondari=db_inter.all_tag_sec()
 
     lista_id=[]
     for ricetta in lista:
         lista_id.append(ricetta[0])
     lista_str=str(lista_id)[1:-1].replace(" ", "")
-    return render_template("elenco.html", flag=int(flag), lista=lista, lista_str=lista_str, num=num)
+
+    return render_template("elenco.html", flag=int(flag), lista=lista, lista_str=lista_str, num_ricette=num_ricette, tag_primari=tag_primari, tag_secondari=tag_secondari)
 
 @app.route("/elenco/ricetta/<id>")
 def ricetta(id):
@@ -325,27 +328,79 @@ def ricette_match_ingredienti(nome):
     Riceve parte degli ingredienti delle ricette,
     restituisce  gli id e i nomi di tutte le ricette che fanno match
     """
-    tutte_ricette=db_inter.all_ricette()
-    list_id=[]
-    list_nomi=[]
-    for ric in tutte_ricette:
-        id_ric=ric[0]
-        nome_ric=ric[1]
-        ingredienti=util.leggi(id_ric)[1]
-        # flag:
-        # 0 -> ingrediente non presente
-        # 1 -> ingrediente presente
+    lista=util.match_ingredienti(nome)
 
-        flag=0
-        for ing in ingredienti:
-            if nome in ing:
-                flag =1
+    return jsonify(lista)
 
-        if flag==1:
-            list_id.append(id_ric)
-            list_nomi.append(nome_ric)
+# REST API per ricevere tutte le ricette che corrispondono a tutti i criteri di ricerca
+@app.route("/ricette_match_completo", methods=["POST"])
+def ricette_match_completo():
+    """
+    La REST API riceve parte del nome, parte degli ingredienti, un
+    tag primario e un tag secondario, e ritorna l'elenco di id di ricette
+    che matchano con  le richieste.
+    """
+    nome=request.form["nome"]
+    ingr=request.form["ingr"]
+    tag_prim=request.form["tag_prim"]
+    tag_sec=request.form["tag_sec"]
 
-    return jsonify([list_id,list_nomi])
+    # Javascript manda "Piatti" invece di "Piatti unici"
+    if tag_prim=="Piatti":
+        tag_prim="Piatti unici"
+
+    # Elenco completo di id ricette
+    list_all_con_nomi=db_inter.all_ricette()
+    set_all=set()
+    for coppia in list_all_con_nomi:
+        set_all.add(coppia[0])
+
+    # Controllo nome
+    set_ricette=set()
+    if nome!="" :
+        result=db_inter.ricette_match_nome(nome)
+        if result!=-1:
+            tmp=util.tuple_to_array(result)[0]
+            set_ricette.update(tmp)
+    else:
+        set_ricette=set_all.copy()
+
+    # Controllo ingredienti
+    set_ingredienti=set()
+    if ingr!="" :
+        result=util.match_ingredienti(ingr)[0]
+        set_ingredienti.update(result)
+    else:
+        set_ingredienti=set_all.copy()
+
+    # Controllo tag primario
+    set_tag_prim=set()
+    if tag_prim!="":
+        result=db_inter.tag_primario_to_id(tag_prim)
+        if result !=-1:
+            set_tag_prim.update(result)
+    else:
+        set_tag_prim=set_all.copy()
+
+    # Controllo tag secondario
+    set_tag_sec = set()
+    if tag_sec != "":
+        result=db_inter.tag_secondario_to_id_ricette(tag_sec)
+        if result!=-1:
+            set_tag_sec.update(result)
+    else:
+        set_tag_sec = set_all.copy()
+
+    # Intersezione set: invio solo gli id che
+    # risultano da tutti i filtri
+
+    print("Ricette: "+str(set_ricette))
+    print("Ingredienti: "+str(set_ingredienti))
+    print("Tag 1: "+str(set_tag_prim))
+    print("Tag 2: "+str(set_tag_sec))
+    lista= list(set_ricette.intersection(set_ingredienti, set_tag_prim, set_tag_sec))
+    print(lista)
+    return jsonify(lista)
 
 if __name__ == '__main__':
     app.run()

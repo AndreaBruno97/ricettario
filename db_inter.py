@@ -10,8 +10,8 @@ Formato degli array generati automaticamente:
 """
 
 def ricerca_tag_regex(tag):
-    #"[num," oppure ", num," oppure ", num]"
-    return "'[[]" + tag + ",|, " + tag + ",|, " + tag + "[]]'"
+    #"[num," oppure ", num," oppure ", num]" oppure "[num]"
+    return "'[[]" + tag + ",|, " + tag + ",|, " + tag + "[]]|[[]" + tag + "[]]'"
 
 # Funzioni generali
 
