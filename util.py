@@ -60,9 +60,15 @@ def scrivi(id_num, ingredienti, testo):
     f.close()
 
 def elimina(id_num, estensione):
+    elimina_testo(id_num)
+    elimina_img(id_num, estensione)
+
+def elimina_testo(id_num):
     link = id_to_link(id_num)
-    immagine = id_to_immagine(id_num, estensione)[1:]
     os.remove(link)
+
+def elimina_img(id_num, estensione):
+    immagine = id_to_immagine(id_num, estensione)[1:]
     os.remove(immagine)
 
 def tuple_to_array(tupla):
@@ -107,3 +113,8 @@ def match_ingredienti(nome):
             list_id.append(id_ric)
             list_nomi.append(nome_ric)
     return [list_id,list_nomi]
+
+def cambia_nome_img(old_id, new_id, old_estensione):
+    old_link=id_to_immagine(old_id, old_estensione)
+    new_link=id_to_immagine(new_id, old_estensione)
+    os.replace(old_link,new_link)

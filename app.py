@@ -179,7 +179,10 @@ def modifica_ricetta():
     # Adattamento formato array per invio a javascript
     tag_sec_scelti=str(tag_sec_scelti_array)[1:-1].replace(" ", "")
 
-    return render_template("modifica_ricetta.html", id=id, flag=flag, nome=nome, tag_primario=tag_primario, testo=testo, ingredienti=ingredienti, num_ingr=len(ingredienti), id_tag=id_tag, tag=tag, num_tag=len(tag), tag_sec_scelti=tag_sec_scelti)
+    estensione = db_inter.id_to_img(id)
+    src_immagine=util.id_to_immagine(id, estensione)
+
+    return render_template("modifica_ricetta.html", id=id, flag=flag, nome=nome, tag_primario=tag_primario, testo=testo, ingredienti=ingredienti, num_ingr=len(ingredienti), id_tag=id_tag, tag=tag, num_tag=len(tag), tag_sec_scelti=tag_sec_scelti, src_immagine=src_immagine)
 
 @app.route("/modifica_ricetta/risultato", methods=["POST"])
 def modifica_ricetta_risultato():
@@ -197,6 +200,8 @@ def modifica_ricetta_risultato():
     id_num = request.form["id"]
     testo = request.form["testo"]
     tag_primario = request.form.get("tag_primario", None)
+    immagine = request.files["new_immagine"]
+    flag_immagine = request.form.get("elimina_immagine", None)
 
     ingredienti = []
     list_id = request.form["elenco_ingr"].split(',')
@@ -213,6 +218,8 @@ def modifica_ricetta_risultato():
             tag_secondari.append(i)
 
     old_nome = db_inter.id_to_nome(id_num)
+    old_id = id_num
+    old_estensione=db_inter.id_to_img(id_num)
 
     if len(testo) == 0:
         # non c'è testo
@@ -230,9 +237,14 @@ def modifica_ricetta_risultato():
         # Nuova ricetta inserita con successo nel database
         if db_inter.new_ricetta(nome, tag_primario, str(tag_secondari)) != -1:
             # modificato anche il titolo
-            db_inter.elimina_ricetta(id_num)
-            util.elimina(id_num)
+            util.elimina_testo(id_num)
             id_num = db_inter.nome_to_id(nome)
+
+            if old_estensione!= "0":
+                # Cambia il nome dell'immagine, visto che è cambiato l'id della ricetta
+                util.cambia_nome_img(old_id, id_num, old_estensione)
+
+            db_inter.elimina_ricetta(id_num)
             flag = 1
         else:
             # ricetta già esistente con il nuovo titolo
@@ -241,11 +253,24 @@ def modifica_ricetta_risultato():
         flag = 1
 
     if flag == 1:
+        if immagine.filename != "":
+            # L'utente ha cambiato l'immagine
+            estensione = immagine.filename.split(".")[-1]
+            immagine.filename = "/immagine_" + str(id_num) + "." + estensione
+            immagine.save(app.config["IMAGE_UPLOADS"] + immagine.filename)
+
+        elif flag_immagine != None :
+            # L'utente ha eliminato l'immagine
+            util.elimina_img(id_num, old_estensione)
+            estensione="0"
+        else:
+            estensione=old_estensione
+
         util.scrivi(id_num, ingredienti, testo)
         db_inter.cambia_tag_primario(id_num, tag_primario)
         db_inter.cambia_tag_secondari(id_num, str(tag_secondari))
+        db_inter.cambia_img(id_num, estensione)
         flag = 1
-
 
     tag_secondari=util.tuple_to_array(db_inter.all_tag_sec())
     id_tag=tag_secondari[0]

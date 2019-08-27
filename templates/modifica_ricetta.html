@@ -9,6 +9,12 @@
     <h1>Modifica la tua ricetta:</h1>
         <form action="{{ url_for("modifica_ricetta_risultato") }}" method="post">
             <p>Nome: <input type="text" name = "nome" value="{{ nome }}"></p>
+
+            <p>Immagine: <img src="{{ src_immagine }}"></p>
+            <p>Sostituisci immagine: <input type="file" accept="image/*" id="new_immagine" name="new_immagine">
+                <button type="button" id="btn_reset_img">Reset immagine</button></p>
+            <p><input type="checkbox" id="elimina_immagine" name="elimina_immagine" value="elimina_immagine" />Elimina immagine</p>
+
                 <p>
                     <!--Tag primario selezionato-->
                     <input type="hidden" id="tag_primario_scelto" name="tag_primario_scelto" value={{ tag_primario }} />
@@ -98,6 +104,7 @@
     <script src="/static/js/modifica_selezione_tag.js"></script>
     <script src="/static/js/conferma_eliminazione.js"></script>
     <script src="/static/js/nuovo_tag_secondario.js"></script>
+    <script src="/static/js/reset_img.js"></script>
 
 </body>
 </html>
