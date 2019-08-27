@@ -68,7 +68,8 @@ def ricetta(id):
     for tag_id in tag_secondari_id:
         tag_secondari.append(db_inter.id_to_tag_sec(tag_id))
 
-    src_immagine=util.id_to_immagine(id)
+    estensione = db_inter.id_to_img(id)
+    src_immagine=util.id_to_immagine(id, estensione)
 
     return render_template("ricetta.html", nome=nome, tag_primario=tag_primario, tag_secondari=tag_secondari, num_tag_secondari=len(tag_secondari), testo=testo, id=id, ingredienti=ingredienti, num_ingredienti=len(ingredienti), src_immagine=src_immagine)
 
@@ -151,9 +152,9 @@ def elimina_ricetta(id):
     """
 
     nome = db_inter.id_to_nome(id)
-
+    estensione = db_inter.id_to_img(id)
     if (len(nome) != 0 and db_inter.elimina_ricetta(id) != -1):
-        util.elimina(id)
+        util.elimina(id, estensione)
         flag=1
     else:
         flag=-1

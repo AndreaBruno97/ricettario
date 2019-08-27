@@ -5,7 +5,7 @@ import os
 import db_inter
 
 #Nome della cartella che contiene le ricette
-ricette="ricette\\"
+ricette="ricette/"
 #Nome della cartella che contiene le immagini delle ricette
 immagini="/static/immagini"
 #Nome dell'immagine di default
@@ -19,11 +19,10 @@ def id_to_link(id_num):
     nome = "ricetta_" + str(id_num) + ext
     return ricette + nome
 
-def id_to_immagine(id_num):
+def id_to_immagine(id_num, estensione):
     # id_to_img ritorna l'estensione dell'immagine da usare,
     # o 0 se l'immagine non c'è
 
-    estensione = db_inter.id_to_img(id_num)
     if estensione != "0":
         nome = "immagine_" + str(id_num) + "." + estensione
         return immagini + "/" + nome
@@ -60,9 +59,11 @@ def scrivi(id_num, ingredienti, testo):
         f.write(riga.rstrip("/n"))
     f.close()
 
-def elimina(id_num):
+def elimina(id_num, estensione):
     link = id_to_link(id_num)
+    immagine = id_to_immagine(id_num, estensione)[1:]
     os.remove(link)
+    os.remove(immagine)
 
 def tuple_to_array(tupla):
     """
