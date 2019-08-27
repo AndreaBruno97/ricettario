@@ -8,6 +8,8 @@ import db_inter
 from flask_cors import CORS
 
 app = Flask(__name__)
+# Imposta la cartella di destinazione per le immagini inviate dall'utente
+app.config['IMAGE_UPLOADS'] = "static/immagini"
 CORS(app)
 
 """
@@ -55,16 +57,20 @@ def elenco(flag):
 def ricetta(id):
     nome = db_inter.id_to_nome(id)
     tag_primario = db_inter.id_to_tag_primario(id)
+
     leggi_tmp = util.leggi(id)
     testo = leggi_tmp[0]
     ingredienti = leggi_tmp[1]
+
     tag_secondari_str=db_inter.id_ricetta_to_tag_secondari(id)
     tag_secondari_id=eval(tag_secondari_str)
     tag_secondari=[]
     for tag_id in tag_secondari_id:
         tag_secondari.append(db_inter.id_to_tag_sec(tag_id))
 
-    return render_template("ricetta.html", nome=nome, tag_primario=tag_primario, tag_secondari=tag_secondari, num_tag_secondari=len(tag_secondari), testo=testo, id=id, ingredienti=ingredienti, num_ingredienti=len(ingredienti))
+    src_immagine=util.id_to_immagine(id)
+
+    return render_template("ricetta.html", nome=nome, tag_primario=tag_primario, tag_secondari=tag_secondari, num_tag_secondari=len(tag_secondari), testo=testo, id=id, ingredienti=ingredienti, num_ingredienti=len(ingredienti), src_immagine=src_immagine)
 
 @app.route("/nuova_ricetta/<flag>")
 def nuova_ricetta(flag):
@@ -89,6 +95,7 @@ def nuova_ricetta_insert():
     nome = request.form["nome"]
     testo = request.form["testo"]
     tag_primario = request.form.get("tag_primario", None)
+    immagine = request.files["immagine"]
 
     tag_secondari_db = db_inter.all_tag_sec()
     tag_secondari = []
@@ -97,7 +104,6 @@ def nuova_ricetta_insert():
         tag_sec_scelta= request.form.get("tag_"+str(i), None)
         if tag_sec_scelta != None:
             tag_secondari.append(i)
-
 
     ingredienti = []
     list_id = request.form["elenco_ingr"].split(',')
@@ -120,6 +126,17 @@ def nuova_ricetta_insert():
     elif db_inter.new_ricetta(nome, tag_primario, str(tag_secondari)) != -1:
         new_id = db_inter.nome_to_id(nome)
         util.scrivi(new_id, ingredienti, testo)
+
+        # Per l'immagine, di default inserisco 0 nel database, altrimenti
+        # salvo l'immagine col nome desiderato e salvo nel database
+        # l'estensione dell'immagine
+
+        if immagine.filename != "":
+            estensione = immagine.filename.split(".")[-1]
+            immagine.filename="/immagine_" + str(new_id) + "." + estensione
+            immagine.save(app.config["IMAGE_UPLOADS"] + immagine.filename)
+            db_inter.cambia_img(new_id, estensione)
+
         flag = 1
     else:
         flag = -2
@@ -393,13 +410,7 @@ def ricette_match_completo():
 
     # Intersezione set: invio solo gli id che
     # risultano da tutti i filtri
-
-    print("Ricette: "+str(set_ricette))
-    print("Ingredienti: "+str(set_ingredienti))
-    print("Tag 1: "+str(set_tag_prim))
-    print("Tag 2: "+str(set_tag_sec))
     lista= list(set_ricette.intersection(set_ingredienti, set_tag_prim, set_tag_sec))
-    print(lista)
     return jsonify(lista)
 
 if __name__ == '__main__':

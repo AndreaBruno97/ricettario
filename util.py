@@ -6,14 +6,29 @@ import db_inter
 
 #Nome della cartella che contiene le ricette
 ricette="ricette\\"
-#Eestensione del file da creare per le ricette
+#Nome della cartella che contiene le immagini delle ricette
+immagini="/static/immagini"
+#Nome dell'immagine di default
+img_default=immagini+"/default.jpg"
+# Eestensione del file da creare per le ricette
 ext=".txt"
-#Separatore nel testo interno tra ingredienti e testo
+# Separatore nel testo interno tra ingredienti e testo
 separatore="#############"
 
 def id_to_link(id_num):
     nome = "ricetta_" + str(id_num) + ext
     return ricette + nome
+
+def id_to_immagine(id_num):
+    # id_to_img ritorna l'estensione dell'immagine da usare,
+    # o 0 se l'immagine non c'è
+
+    estensione = db_inter.id_to_img(id_num)
+    if estensione != "0":
+        nome = "immagine_" + str(id_num) + "." + estensione
+        return immagini + "/" + nome
+    else:
+        return  img_default
 
 def leggi(id_num):
     link=id_to_link(id_num)

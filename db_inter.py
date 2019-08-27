@@ -215,3 +215,16 @@ def tag_sec_to_id(tag):
     result = esegui_query_ricerca("select id from ricettario.tag_sec where binary tag=%s", (tag,))
 
     return controllo_risultato_mono(result)
+
+def id_to_img(id):
+    # Ritorna il valore del campo "immagine":
+    # 1 se l'immmagine esiste
+    # 0 se non esiste l'immagine (e dunque va usata l'immagine di default)
+    # -1 in caso di errore
+    result = esegui_query_ricerca("select immagine from ricettario.ricettario where id=%s", (id,))
+
+    return controllo_risultato_mono(result)
+
+def cambia_img(id, estensione):
+    # Modifica l'immagine di una ricetta dato il suo id
+    esegui_query_modifica("update ricettario.ricettario set immagine=%s where id=%s", (estensione, id))
